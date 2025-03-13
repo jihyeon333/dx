@@ -14,7 +14,7 @@ const props = defineProps({
     cancelText: { type: String, default: '취소' },
     overlayClosable: { type: Boolean, default: true },
     showCloseButton: { type: Boolean, default: false },
-    align: { type: String, default: 'center' }, // ✅ 기본 정렬을 'center'로 설정
+    align: { type: String, default: 'center' },
 });
 
 const emits = defineEmits(['confirm', 'cancel', 'close']);
@@ -25,15 +25,15 @@ const closeModal = () => {
 
 const confirmAction = () => {
     emits('confirm');
-    closeModal();
+    closeModal(); // 클릭 시 confirm 후 모달을 닫음
 };
 
 const cancelAction = () => {
     emits('cancel');
-    closeModal();
+    closeModal(); // 클릭 시 cancel 후 모달을 닫음
 };
 
-// ✅ 동적 클래스 생성
+// 동적 클래스 생성
 const contentClass = computed(() => ({
     'text-left': props.align === 'left',
     'text-center': props.align === 'center',

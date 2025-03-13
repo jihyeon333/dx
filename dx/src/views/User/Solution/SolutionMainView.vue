@@ -1,78 +1,159 @@
 <script setup>
-import { ref } from "vue";
+import { ref, nextTick, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { reactive } from "vue";
 import Title from "@/components/common/Title.vue";
 import CardBox from "@/components/common/CardBox.vue";
 import Input from "@/components/common/Input.vue";
-import SearchBar from "@/components/common/SearchBar.vue";
+import DropdownMenu from "@/components/common/DropdownMenu.vue";
 import DataTable from "@/components/common/DataTable.vue";
-import Modal from "@/components/common/Modal.vue"; // ✅ 모달 컴포넌트 추가
+import Modal from "@/components/common/Modal.vue";
+import Button from "@/components/common/Button.vue";
+import customArrowIcon from '@/assets/image/icon/chevron-down.svg';
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
 
 const endpoint = ref("http://ai.solution.com/ID (학습)");
+const router = useRouter();
+const modalState = reactive({
+  confirmDelete: false,
+  confirmParameter: false,
+});
 
-// ✅ 모달 상태 및 삭제할 파라미터가 있는 행 저장
-const confirmModal = ref(false);
-const selectedRow = ref(null);
+onMounted(async () => {
+  await nextTick();
+  console.log("onMounted - tableRef:", tableRef.value);
+});
+//  테이블 참조
+const tableRef = ref(null);
 
-// ✅ 파라미터 삭제 모달 열기
-const openParameterDeleteModal = (row) => {
-  selectedRow.value = row;
-  confirmModal.value = true;
-};
+//  연계 삭제 모달 상태 및 선택된 행
+const confirmDeleteModal = ref(false);
+const selectedRows = ref([]);
 
-// ✅ 모달에서 "확인"을 누르면 해당 행의 파라미터만 삭제
-const confirmDeleteParameter = () => {
-  if (selectedRow.value) {
-    selectedRow.value.parameter = ""; // ✅ 파라미터 값 비움
+//  파라미터 삭제 모달 상태 및 선택된 행
+const confirmParameterModal = ref(false);
+const selectedParameterRow = ref(null);
+
+//  선택된 필터 (초기값: 연계명)
+const selectedFilter = ref("연계명");
+
+//  검색어
+const searchQuery = ref("");
+
+//  필터 옵션 정의
+const filterOptions = ref([
+  { label: "연계명", value: "name" },
+  { label: "공정종류", value: "processType" },
+  { label: "공정명", value: "processName" },
+  { label: "연계 ID", value: "endpoint" },
+  { label: "AI 종류", value: "type" },
+]);
+
+//  필터 변경 시 업데이트
+const handleFilterChange = (newLabel) => {
+  const found = filterOptions.value.find(opt => opt.label === newLabel);
+  if (found) {
+    selectedFilter.value = found.label;
   }
-  closeModal();
+};
+//  검색 실행
+const updateFilter = () => {
+  console.log(`"${selectedFilter.value}" 기준으로 "${searchQuery.value}" 검색 실행`);
 };
 
-// ✅ 모달 닫기
-const closeModal = () => {
-  selectedRow.value = null;
-  confirmModal.value = false;
+//  추가 버튼 클릭 시
+const addRow = () => {
+  router.push({ name: "SolutionAdd" });
 };
 
-// ✅ 테이블 컬럼 정의
 const columns = ref([
-  { key: "name", label: "연계명", width: "100px", align: "text-center" },
-  { key: "processType", label: "공정종류", width: "20%", align: "text-center" },
-  { key: "processName", label: "공정명", width: "20%", align: "text-center" },
-  { key: "linkId", label: "연계 ID", width: "20%", align: "text-center" },
-  { key: "aiType", label: "AI 종류", width: "20%", align: "text-center" },
+  { key: "name", label: "연계명", width: "17%", align: "text-center" },
+  { key: "processType", label: "공정종류", width: "17%", align: "text-center" },
+  { key: "processName", label: "공정명", width: "17%", align: "text-center" },
+  { key: "endpoint", label: "연계 ID", width: "17%", align: "text-center" },
+  { key: "type", label: "AI 종류", width: "17%", align: "text-center" },
 ]);
 
-// ✅ 테이블 데이터 정의
+//  테이블 데이터 정의
 const data = ref([
-  { name: "압연DPS", processType: "압연", processName: "구미열압", linkId: "GumiHM", aiType: "학습", parameter: "12345" },
-  { name: "압연검사", processType: "영상", processName: "구미냉압", linkId: "GumiM", aiType: "예측", parameter: "67890" },
-  { name: "압연분석", processType: "분석", processName: "포항코팅", linkId: "PohangC", aiType: "학습", parameter: "11111" },
+  { id: 1, name: "압연DPS", processType: "압연", processName: "구미열압", endpoint: "GumiHM", type: "학습", parameter: "12345" },
+  { id: 2, name: "압연검사", processType: "영상", processName: "구미냉압", endpoint: "GumiM", type: "예측", parameter: "67890" },
+  { id: 3, name: "압연분석", processType: "분석", processName: "포항코팅", endpoint: "PohangC", type: "학습", parameter: "11111" },
 ]);
 
-// ✅ 추가 컬럼 (삭제 버튼 클릭 시 `openParameterDeleteModal` 호출)
 const extraColumn = ref({
   key: "parameter",
   label: "파라미터",
-  width: '200px',
+  width: "200px",
   actions: [
     {
       label: "삭제",
       className: "btn-delete",
-      handler: openParameterDeleteModal, // ✅ 파라미터 삭제 모달 열기
+      handler: (row) => openParameterDeleteModal(row),
     },
     {
       label: "보기",
       className: "btn-view",
-      handler: (row) => alert(`보기 클릭: ${row.name}`),
+      handler: (row) => viewParameter(row),
     },
   ],
 });
+const openDeleteConfirmModal = async () => {
+  await nextTick();
 
-// ✅ 필터 옵션 정의
-const filterOptions = ref(["연계명", "공정종류", "공정명", "연계ID", "AI종류"]);
+  console.log("tableRef:", tableRef.value);
+  console.log("getSelectedRows exists:", typeof tableRef.value?.getSelectedRows === "function");
+
+  if (!tableRef.value || typeof tableRef.value.getSelectedRows !== "function") {
+    console.error("테이블 참조가 올바르지 않습니다.");
+    return;
+  }
+
+  selectedRows.value = [...(tableRef.value.getSelectedRows() || [])];
+
+  console.log("선택된 행:", selectedRows.value);
+
+  if (selectedRows.value.length === 0) {
+    alert("삭제할 항목을 선택하세요.");
+    return;
+  }
+
+  modalState.confirmDelete = true;
+};
 
 
-const selectable = ref(true);
+//  연계 목록 삭제 확인
+const confirmDeleteRows = () => {
+  if (!selectedRows.value.length) {
+    console.error("삭제할 항목이 없습니다.");
+    return;
+  }
+  data.value = data.value.filter(row => !selectedRows.value.some(selRow => selRow.id === row.id));
+  selectedRows.value = [];
+  confirmDeleteModal.value = false;
+};
+
+//  파라미터 보기 함수
+const viewParameter = (row) => {
+  router.push({
+    name: "SolutionParams",
+    query: { id: row.id, name: row.name },
+  });
+};
+
+//  파라미터 삭제 모달 열기
+const openParameterDeleteModal = (row) => {
+  selectedParameterRow.value = row;
+  modalState.confirmParameter = true; // 상태 변경
+};
+
+//  파라미터 삭제 확인
+const confirmDeleteParameter = () => {
+  if (selectedParameterRow.value) {
+    selectedParameterRow.value.parameter = "";
+  }
+  confirmParameterModal.value = false;
+};
 </script>
 
 <template>
@@ -85,19 +166,35 @@ const selectable = ref(true);
           <Input v-model="endpoint" :is-disabled="true" readonly />
         </div>
       </CardBox>
+      <div class="SearchBar right">
+        <div class="buttons">
+          <Button class=" btn-success" @click="addRow" label="추가" />
+          <Button class=" btn-delete" @click="openDeleteConfirmModal" label="삭제" />
+        </div>
+        <div class="SearchFilter">
+          <DropdownMenu v-model="selectedFilter" :options="filterOptions.map(opt => opt.label)" placeholder="필터를 선택하세요"
+            type="radio" :arrowIcon="customArrowIcon" @update:modelValue="handleFilterChange" />
+          <div class="Search">
+            <Input v-model="searchQuery" placeholder="검색어를 입력해주세요." class="search-input" />
+            <Button :icon="faSearch" @click="updateFilter" class="search-btn" />
+          </div>
+        </div>
+      </div>
 
-      <SearchBar :filterOptions="filterOptions" @filterChange="handleFilterChange" :buttons="[
-        { label: '추가', className: 'btn-success', onClick: addRow },
-        { label: '삭제', className: 'btn-danger', onClick: deleteSelectedRows }
-      ]" />
+      <DataTable :columns="columns" :data="data" :extraColumn="extraColumn" ref="tableRef" :selectable="true"
+        class="fix fixed" />
 
-      <DataTable :columns="columns" :data="data" :extraColumn="extraColumn" :selectable="selectable" ref="tableRef"
-        class="fix fiexd" />
+      <!--  연계 삭제 확인 모달 -->
+      <Modal :show="modalState.confirmDelete" title="연계 삭제 확인"
+        :message="selectedRows.length ? `${selectedRows.length}개의 항목을 삭제하시겠습니까?` : ''" confirmText="확인" cancelText="취소"
+        @confirm="confirmDeleteRows" @close="modalState.confirmDelete = false"
+        @cancel="modalState.confirmDelete = false" />
 
-      <!-- ✅ 파라미터 삭제 확인 모달 -->
-      <Modal :show="confirmModal" title="삭제 경고" :message="selectedRow ? `정말로 삭제하시겠습니까?` : ''" confirmText="확인"
-        cancelText="취소" @confirm="confirmDeleteParameter" @close="closeModal" @cancel="closeModal"
-        :overlayClosable="false" :showCloseButton="true" class="confirmModal" />
+      <!--  파라미터 삭제 확인 모달 -->
+      <Modal :show="modalState.confirmParameter" title="파라미터 삭제 확인"
+        :message="selectedParameterRow ? `선택된 파라미터를 삭제하시겠습니까?` : ''" confirmText="확인" cancelText="취소"
+        @confirm="confirmDeleteParameter" @close="modalState.confirmParameter = false"
+        @cancel="modalState.confirmParameter = false" />
     </div>
   </div>
 </template>

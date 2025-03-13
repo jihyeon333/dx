@@ -3,7 +3,6 @@ import { ref, defineProps, defineEmits } from "vue";
 import SearchFilter from "@/components/common/SearchFilter.vue";
 import Button from "./Button.vue";
 
-
 defineProps({
   filterOptions: {
     type: Array,
@@ -20,6 +19,14 @@ const selectedFilter = ref("");
 const searchQuery = ref("");
 
 const emits = defineEmits(["filterChange", "buttonClick"]);
+
+// ✅ 버튼 클릭 이벤트 핸들러 추가
+const handleButtonClick = (button) => {
+  if (button.onClick) {
+    button.onClick(); // 버튼의 클릭 이벤트 실행
+  }
+  emits("buttonClick", button); // 부모 컴포넌트로 이벤트 전달
+};
 
 const handleFilterUpdate = (data) => {
   selectedFilter.value = data.filter;

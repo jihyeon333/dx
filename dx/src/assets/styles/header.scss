@@ -144,6 +144,7 @@
 .header-wrap.guest-nav .top-nav .gnb .nav-list .menu a:hover {
 	background-color: #162e47;
 }
+
 #gnb {
 	width: 275px;
 	position: fixed;
@@ -271,6 +272,36 @@
 					font-weight: 500;
 				}
 			}
+		}
+	}
+}
+
+.header-wrap.parameter .top-nav .gnb .nav-list .menu:nth-child(4) {
+	background-color: #005cba;
+}
+.header-wrap.parameter #gnb .gnb .depth1 .dp1:nth-child(4) {
+	background-color: #edf3fa;
+	border-radius: 6px;
+	.da1 {
+		i {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			justify-content: center;
+			width: 20px;
+			height: 20px;
+			img {
+				filter: grayscale(0) opacity(1);
+			}
+		}
+		span {
+			color: #005cba;
+			font-weight: 600;
+		}
+		.fa-angle-up {
+			display: block;
+			font-size: 14px;
+			color: #005cba;
 		}
 	}
 }

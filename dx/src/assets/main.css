@@ -37,6 +37,11 @@
 	max-width: 500px;
 	width: 100%;
 }
+.tableModal .modal-article {
+	max-width: 500px;
+	width: 100%;
+}
+
 .modal-header {
 	width: 100%;
 	display: flex;
@@ -71,7 +76,11 @@
 	white-space: pre-line;
 	padding: 30px;
 }
-
+.tableModal .modal-content {
+	padding: 0 30px;
+	max-height: 370px;
+	overflow: auto;
+}
 .modal-content .modal-message {
 	font-size: 16px;
 	letter-spacing: -0.75px;
@@ -112,6 +121,36 @@
 	font-weight: 600;
 	line-height: 1;
 	color: #003c7a;
+}
+
+.modal-table {
+	width: 100%;
+	border-collapse: collapse;
+	border-spacing: 0;
+	background-color: #ffffff;
+}
+.modal-table thead tr {
+	height: 40px;
+	background: #f8f8f8;
+	border-top: 1px solid #88888860;
+	border-bottom: 1px solid #88888860;
+}
+.modal-table thead tr th {
+	font-size: 13px;
+	font-weight: 800;
+	color: #200224;
+	letter-spacing: -0.75px;
+	text-align: center;
+}
+.modal-table tbody tr {
+	height: 40px;
+	border-bottom: 1px solid #88888860;
+}
+.modal-table tbody tr td {
+	padding: 10px;
+	text-align: center;
+	font-size: 13px;
+	color: #202224;
 }
 .modal-buttons {
 	display: flex;

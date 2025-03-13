@@ -85,18 +85,7 @@ watch(
           <router-link to="/user/Device" class="da1">
             <i><img :src="NavIcon03" alt="장비관리"></i>
             <span>장비관리</span>
-            <font-awesome-icon :icon="faAngleUp"></font-awesome-icon>
           </router-link>
-          <ul class="depth2" :class="{ open: isActive('/user/Device/').value }">
-            <li>
-              <i class="circle" :class="{ act: isActive('/user/Device/add').value }"></i>
-              <router-link to="/user/Device/add">추가</router-link>
-            </li>
-            <li>
-              <i class="circle" :class="{ act: isActive('/user/Device/edit').value }"></i>
-              <router-link to="/user/Device/edit">수정</router-link>
-            </li>
-          </ul>
         </div>
 
         <!-- 실증솔루션 -->
@@ -104,18 +93,7 @@ watch(
           <router-link to="/user/Solution" class="da1">
             <i><img :src="NavIcon04" alt="실증솔루션"></i>
             <span>실증솔루션</span>
-            <font-awesome-icon :icon="faAngleUp"></font-awesome-icon>
           </router-link>
-          <ul class="depth2" :class="{ open: isActive('/user/Solution/').value }">
-            <li>
-              <i class="circle" :class="{ act: isActive('/user/Solution/add').value }"></i>
-              <router-link to="/user/Solution/add">추가</router-link>
-            </li>
-            <li>
-              <i class="circle" :class="{ act: isActive('/user/Solution/edit').value }"></i>
-              <router-link to="/user/Solution/edit">수정</router-link>
-            </li>
-          </ul>
         </div>
 
         <!-- DT연계관리 -->
@@ -123,18 +101,7 @@ watch(
           <router-link to="/user/DTlink" class="da1">
             <i><img :src="NavIcon05" alt="DT연계관리"></i>
             <span>DT연계관리</span>
-            <font-awesome-icon :icon="faAngleUp"></font-awesome-icon>
           </router-link>
-          <ul class="depth2" :class="{ open: isActive('/user/DTlink/').value }">
-            <li>
-              <i class="circle" :class="{ act: isActive('/user/DTlink/add').value }"></i>
-              <router-link to="/user/DTlink/add">추가</router-link>
-            </li>
-            <li>
-              <i class="circle" :class="{ act: isActive('/user/DTlink/edit').value }"></i>
-              <router-link to="/user/DTlink/edit">수정</router-link>
-            </li>
-          </ul>
         </div>
       </div>
     </nav>

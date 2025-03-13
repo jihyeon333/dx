@@ -268,8 +268,184 @@ main {
 				}
 				.dropdown-container {
 					width: 120px;
+					.dropdown-menu {
+						border: 1px solid #5a5a5a;
+						margin-top: 3px;
+						overflow: hidden;
+						box-shadow: 4px 4px 20px 0 #0000000d;
+						.menu-list .list .item {
+							color: #5a5a5a;
+						}
+					}
 				}
 			}
+			.right-wrap {
+				display: flex;
+				flex-direction: row;
+				justify-content: flex-end;
+				align-items: center;
+				gap: 10px;
+				button {
+					width: 130px;
+					height: 40px;
+					display: flex;
+					flex-direction: row;
+					align-items: center;
+					justify-content: center;
+					padding: 5px;
+					gap: 10px;
+					font-size: 14px;
+					letter-spacing: -0.75px;
+					font-weight: 500;
+					background-color: #ffffff;
+					border: 1px solid #d9d9d9;
+					img {
+						width: 18px;
+						height: 18px;
+						object-fit: contain;
+					}
+				}
+				.btn-delete {
+					color: #fc5555;
+				}
+			}
+		}
+		.add-table-form {
+			border-radius: 14px;
+			border: 1px solid #d9d9d9;
+			background-color: #ffffff;
+			.add-table {
+				.table-header {
+					border-radius: 14px 14px 0 0;
+					overflow: hidden;
+					thead tr {
+						height: 55px;
+					}
+				}
+				tbody tr {
+					height: 70px;
+					td {
+						.input {
+							input {
+								border: none;
+								box-shadow: none;
+								transition: all 0.3s;
+								text-align: center;
+							}
+							input:focus {
+								border: 1px solid #d9d9d9;
+							}
+						}
+					}
+				}
+				.dropdown-container.select.w110 {
+					width: 110px;
+					margin: 0 auto;
+					.dropdown-input {
+						input {
+							padding: 6px 10px;
+						}
+						.arrow {
+							width: 30px;
+							height: 30px;
+						}
+					}
+					.dropdown-menu {
+						border: 1px solid #5a5a5a;
+						margin-top: 3px;
+						overflow: hidden;
+						box-shadow: 4px 4px 20px 0 #0000000d;
+						.menu-list .list .item {
+							color: #5a5a5a;
+						}
+					}
+				}
+				border-bottom: 1px solid #d9d9d9;
+			}
+			.button-wrap {
+				padding: 16px 30px;
+				display: flex;
+				flex-direction: row;
+				justify-content: flex-end;
+				.btn-save {
+					width: 200px;
+					height: 40px;
+					border-radius: 6px;
+					background-color: #003c7a;
+					font-size: 14px;
+					font-weight: 500;
+					letter-spacing: -0.75px;
+					color: #ffffff;
+				}
+			}
+		}
+
+		.SearchBar {
+			width: 100%;
+			display: flex;
+			flex-direction: row;
+			gap: 10px;
+			.buttons {
+				width: auto;
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+				gap: 10px;
+				button {
+					width: 85px;
+					height: 40px;
+					border-radius: 6px;
+					background-color: #ffffff;
+					border: 1px solid #d9d9d9;
+					color: #5a5a5a;
+					font-size: 14px;
+					font-weight: 500;
+				}
+				.btn-delete {
+					color: #fc5555;
+				}
+			}
+			.SearchFilter {
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+				gap: 10px;
+				.dropdown-container {
+					width: 116px;
+				}
+				.Search {
+					display: flex;
+					flex-direction: row;
+					align-items: center;
+					position: relative;
+					.input-box .input {
+						background-color: #ffffff;
+						border-radius: 6px;
+						border: 1px solid #d9d9d9;
+						input {
+							border: none;
+							width: calc(100% - 40px);
+							box-shadow: none;
+						}
+						.input-box .input:focus {
+							border-color: #6c89c080;
+							box-shadow: 0 4px 8px 0 #6c89c026;
+						}
+					}
+
+					.search-btn {
+						background-color: transparent;
+						color: #5a5a5a;
+						font-size: 16px;
+						position: absolute;
+						right: 0;
+						box-shadow: none;
+					}
+				}
+			}
+		}
+		.SearchBar.right {
+			justify-content: flex-end;
 		}
 	}
 

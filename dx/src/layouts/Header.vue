@@ -11,6 +11,8 @@ const props = defineProps({
 const headerClass = computed(() => ({
   "guest-nav": !props.isLoggedIn,
 }));
+
+
 </script>
 
 <template>
