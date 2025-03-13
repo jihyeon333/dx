@@ -19,7 +19,7 @@ const SolutionAdd = () => import("@/views/User/Solution/SolutionAddView.vue");
 const SolutionEdit = () => import("@/views/User/Solution/SolutionEditView.vue");
 const SolutionParams = () => import("@/views/User/Solution/SolutionParamsView.vue");
 
-const AdminDashboard = () => import("@/views/Admin/Dashboard/AdminDashboardView.vue");
+const MemberList = () => import("@/views/Admin/Mypage/MemberLIstView.vue");
 const NotFound = () => import("@/views/Error/ForbiddenView.vue");
 
 const routes = [
@@ -69,7 +69,7 @@ const routes = [
 		path: "/admin",
 		component: DefaultLayout,
 		meta: { requiresAuth: true, adminOnly: true },
-		children: [{ path: "dashboard", name: "AdminDashboard", component: AdminDashboard }],
+		children: [{ path: "maypage", name: "MemberList", component: MemberList }],
 	},
 
 	// ✅ 404 페이지

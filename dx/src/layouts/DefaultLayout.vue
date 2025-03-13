@@ -17,8 +17,10 @@ const headerClass = computed(() => ({
 </script>
 
 <template>
+<div class="wrap">
   <Header :class="headerClass" :isLoggedIn="props.isLoggedIn" />
   <main class="main">
     <router-view />
   </main>
+  </div>
 </template>

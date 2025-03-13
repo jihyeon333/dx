@@ -20,8 +20,10 @@ const headerClass = computed(() => {
 </script>
 
 <template>
+<div>
   <Header :isLoggedIn="props.isLoggedIn" :class="headerClass" />
   <main>
     <router-view />
   </main>
+  </div>
 </template>
