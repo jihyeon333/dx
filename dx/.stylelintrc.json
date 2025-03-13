@@ -1,0 +1,6 @@
+{
+  "extends": ["stylelint-config-standard", "stylelint-scss"],
+  "rules": {
+    "rule-empty-line-before": "never"
+  }
+}
