@@ -28,14 +28,14 @@ const alertVisible = ref(false);
 const alertMessage = ref("");
 const alertType = ref("error");
 
-// ✅ 공정 종류별 공정명 매핑
+// 공정 종류별 공정명 매핑
 const processMapping = {
   "압연": ["구미열압", "구미냉압"],
   "열처리": ["포항저온", "포항고온"],
   "코팅": ["포항코팅", "구미코팅"]
 };
 
-// ✅ 공정명별 AI 종류 매핑
+// 공정명별 AI 종류 매핑
 const aiMapping = {
   "구미열압": ["학습", "예측"],
   "구미냉압": ["학습"],
@@ -45,17 +45,17 @@ const aiMapping = {
   "구미코팅": ["분석", "학습"]
 };
 
-// ✅ 선택 가능한 옵션 (Computed)
+// 선택 가능한 옵션 (Computed)
 const processNameOptions = computed(() => processMapping[fields.processType.value] || []);
 const aiTypeOptions = computed(() => aiMapping[fields.processName.value] || []);
 
-// ✅ 비활성화 상태 설정
+// 비활성화 상태 설정
 const isProcessNameDisabled = computed(() => !fields.processType.value);
 const isAiTypeDisabled = computed(() => !fields.processName.value);
 
 watch(() => fields.processType.value, (newValue) => {
-  fields.processName.value = ""; // ✅ 공정명 초기화
-  fields.aiType.value = ""; // ✅ AI 종류 초기화
+  fields.processName.value = ""; // 공정명 초기화
+  fields.aiType.value = ""; // AI 종류 초기화
 });
 
 
@@ -65,7 +65,7 @@ const leftButtons = [
 ];
 
 
-// ✅ 제출 버튼 핸들러
+// 제출 버튼 핸들러
 const submitAdd = () => {
   if (!fields.linkedName.value || !fields.processType.value || !fields.processName.value ||
     !fields.idName.value || !fields.aiType.value || !fields.linkedServer.value) {
@@ -77,7 +77,7 @@ const submitAdd = () => {
   isModalVisible.value = true;
 };
 
-// ✅ 모달 관련 처리
+// 모달 관련 처리
 const isModalVisible = ref(false);
 const onConfirmSubmit = () => {
   isModalVisible.value = false;
@@ -118,9 +118,9 @@ const testServerConnection = async () => {
   // 에러 메시지 초기화
   serverTestAlertMessage.value = "";
 
-  // ✅ 모의 서버 테스트 (실제 API 요청 대신 setTimeout 사용)
+  // 모의 서버 테스트 (실제 API 요청 대신 setTimeout 사용)
   setTimeout(() => {
-    const isAvailable = fields.linkedServer.value.startsWith("http"); // ✅ 간단한 유효성 검사
+    const isAvailable = fields.linkedServer.value.startsWith("http"); // 간단한 유효성 검사
 
     if (isAvailable) {
       testResultMessage.value = "서버 연결이 성공했습니다.";
@@ -142,7 +142,7 @@ const confirmTestCompletion = () => {
   isTestCompleteModalVisible.value = false;
 };
 
-// ✅ "취소" 버튼 (모달 닫기만 함)
+// "취소" 버튼 (모달 닫기만 함)
 const cancelTestCompletion = () => {
   isTestCompleteModalVisible.value = false;
 };

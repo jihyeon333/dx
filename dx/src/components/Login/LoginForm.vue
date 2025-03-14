@@ -46,9 +46,9 @@ const submitLogin = () => {
 
         // ✅ 로그인 성공 정보를 query로 전달
         if (user.role === 'admin') {
-            router.push({ path: '/admin/dashboard', query: { success: true } });
+            router.push({ path: '/admin/adminmypage', query: { success: true } });
         } else {
-            router.push({ path: '/user/Process', query: { success: true } });
+            router.push({ path: '/user', query: { success: true } });
         }
     } else {
         emits('updateError', { error: true, message: '아이디 또는 비밀번호가 일치하지 않습니다.' });

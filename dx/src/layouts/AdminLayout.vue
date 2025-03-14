@@ -1,8 +1,10 @@
-<script setup>
-</script>
-
 <template>
-  <main>
-    <router-view />
-  </main>
+  <div class="admin-layout">
+    <header class="admin-header">
+      <TopNav />
+    </header>
+    <main>
+      <router-view />
+    </main>
+  </div>
 </template>

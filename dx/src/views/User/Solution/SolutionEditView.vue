@@ -15,7 +15,7 @@ const solutionId = ref(route.query.id);
 
 const endpoint = ref("http://ai.solution.com/ID (학습)");
 
-// ✅ 기존 데이터를 불러올 함수 (API 호출 대신 Mock Data 사용)
+// 기존 데이터를 불러올 함수 (API 호출 대신 Mock Data 사용)
 const fetchExistingData = () => {
   alertMessage.value = "데이터 불러오는 중...";
   alertType.value = "info";
@@ -39,12 +39,12 @@ const fetchExistingData = () => {
   }, 2000);
 };
 
-// ✅ 드롭다운 옵션 데이터
+// 드롭다운 옵션 데이터
 const processTypeOptions = ref(["압연", "주조", "도금", "절삭"]);
 const processNameOptions = ref(["구미열압", "포항냉압", "광양코팅"]);
 const aiTypeOptions = ref(["예측", "분석", "제어"]);
 
-// ✅ 필드 정의
+// 필드 정의
 const fields = ref({
   linkedName: "",
   processType: "",
@@ -71,7 +71,7 @@ const isModalVisible = ref(false);
 const modalMessage = ref("연계를 수정하시겠습니까?");
 const isServerTestSuccessful = ref(false);
 
-// ✅ 서버 연결 테스트
+// 서버 연결 테스트
 const testServerConnection = () => {
   alertMessage.value = "서버 테스트 중...";
   alertType.value = "info";
@@ -85,7 +85,7 @@ const testServerConnection = () => {
   }, 1000);
 };
 
-// ✅ 버튼 기본 활성화 (true로 고정)
+// 버튼 기본 활성화 (true로 고정)
 const isFormValid = computed(() => true);
 
 // 🎯 **"수정" 버튼 클릭 시 모달 표시**

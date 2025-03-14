@@ -135,18 +135,19 @@
 		}
 	}
 }
-.header-wrap.guest-nav .top-nav .gnb .nav-list a {
+.header-wrap.auth-header .top-nav .gnb .nav-list a {
 	pointer-events: none;
 	color: #6c89c0;
 	background-color: #162e47;
 	cursor: default;
 }
-.header-wrap.guest-nav .top-nav .gnb .nav-list .menu a:hover {
+.header-wrap.auth-header .top-nav .gnb .nav-list .menu a:hover {
 	background-color: #162e47;
 }
-.header-wrap.guest-nav .main-nav {
+.header-wrap.auth-header .main-nav {
 	display: none;
 }
+
 .header-wrap .main-nav {
 	display: block;
 }

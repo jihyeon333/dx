@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import DefaultLayout from "@/layouts/DefaultLayout.vue";
 import UserLayout from "@/layouts/UserLayout.vue";
+import AdminLayout from "@/layouts/AdminLayout.vue";
 
 // ✅ Lazy Loading 적용
 const login = () => import("@/views/Login/LoginView.vue");
@@ -19,7 +20,8 @@ const solutionAdd = () => import("@/views/User/Solution/SolutionAddView.vue");
 const solutionEdit = () => import("@/views/User/Solution/SolutionEditView.vue");
 const solutionParams = () => import("@/views/User/Solution/SolutionParamsView.vue");
 
-const adminDashboard = () => import("@/views/Admin/Dashboard/AdminDashboardView.vue");
+const adminMypage = () => import("@/views/Admin/Mypage/UserListView.vue");
+
 const NotFound = () => import("@/views/Error/ForbiddenView.vue");
 
 const routes = [
@@ -64,12 +66,21 @@ const routes = [
 		],
 	},
 
-	// ✅ 관리자 페이지 (DefaultLayout 적용)
+	// ✅ 관리자 페이지 (adminLayout 적용)
 	{
 		path: "/admin",
-		component: DefaultLayout,
+		component: AdminLayout,
 		meta: { requiresAuth: true, adminOnly: true },
-		children: [{ path: "dashboard", name: "AdminDashboard", component: adminDashboard }],
+		redirect: "/admin/adminmypage",
+		children: [
+			{
+				path: "adminmypage",
+				component: solution, // r=관리자 회원관리
+				children: [
+					{ path: "", name: "adminmypage", component: adminMypage }, // 기본 페이지
+				],
+			},
+		],
 	},
 
 	// ✅ 404 페이지
