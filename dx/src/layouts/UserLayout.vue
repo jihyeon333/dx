@@ -1,10 +1,10 @@
+<script setup>
+import Header from "@/layouts/Header.vue";
+</script>
+
 <template>
-  <div class="user-layout">
-    <header class="user-header"> <!-- ✅ 사용자 레이아웃에 맞는 header -->
-      <TopNav />
-    </header>
-    <main>
-      <router-view />
-    </main>
-  </div>
+  <Header class="user-header" />
+  <main>
+    <router-view />
+  </main>
 </template>

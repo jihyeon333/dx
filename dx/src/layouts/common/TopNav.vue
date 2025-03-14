@@ -1,5 +1,6 @@
 <script setup>
 import { useRouter, useRoute } from "vue-router";
+import { computed } from "vue";
 import { defineEmits } from 'vue';
 import '@/assets/styles/views/login.scss';
 import pomiaHeaderLogo from '@/assets/image/pomia_Header_logo.svg';
@@ -7,6 +8,17 @@ import pomiaHeaderLogo from '@/assets/image/pomia_Header_logo.svg';
 const emits = defineEmits(["login", "logout"]);
 const router = useRouter();
 const route = useRoute();
+
+const user = computed(() => JSON.parse(localStorage.getItem("user") ?? "{}"));
+const isAdmin = computed(() => user.value.role === "admin");
+
+const navigateToDashboard = () => {
+  if (isAdmin.value) {
+    router.push("/admin/adminmypage"); // 관리자 대시보드
+  } else {
+    router.push("/user/usermypage"); // 일반 사용자 페이지
+  }
+};
 
 // 로그아웃 처리 함수
 const triggerLogout = () => {

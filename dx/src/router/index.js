@@ -83,6 +83,15 @@ const routes = [
 		],
 	},
 
+	{
+		path: "/mypage",
+		name: "Mypage",
+		redirect: (to) => {
+			const user = JSON.parse(localStorage.getItem("user") ?? "{}");
+			return user.role === "admin" ? "/admin/adminmypage" : "/user/usermypage";
+		},
+	},
+
 	// ✅ 404 페이지
 	{
 		path: "/:pathMatch(.*)*",
@@ -103,10 +112,17 @@ router.beforeEach((to, from, next) => {
 	const user = JSON.parse(localStorage.getItem("user") ?? "{}");
 	const isAdmin = user.role === "admin";
 
+	// ✅ 로그인 여부 확인
 	if (to.meta.requiresAuth && !isAuthenticated) {
 		next({ name: "Login" });
-	} else if (to.meta.adminOnly && !isAdmin) {
+	}
+	// ✅ 관리자 전용 페이지 차단
+	else if (to.meta.adminOnly && !isAdmin) {
 		next({ name: "Process" });
+	}
+	// ✅ 같은 이름의 메뉴라도 다르게 이동
+	else if (to.name === "Dashboard") {
+		next(isAdmin ? "/admin/adminmypage" : "/user/usermypage");
 	} else {
 		next();
 	}
