@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import { useRouter } from "vue-router";
 import Title from "@/components/common/Title.vue";
 import CardBox from "@/components/common/CardBox.vue";
@@ -7,23 +7,13 @@ import Input from "@/components/common/Input.vue";
 import Form from "@/components/common/Form.vue";
 import DropdownMenu from "@/components/common/DropdownMenu.vue";
 import Button from "@/components/common/Button.vue";
-import RightIcon from "@/assets/image/icon/right-arrow.svg";
-import customArrowIcon from '@/assets/image/icon/chevron-down.svg';
-import EditIcon from "@/assets/image/icon/edit.svg";
 import Alert from "@/components/common/Alert.vue";
 import Modal from "@/components/common/Modal.vue";
+import EditIcon from "@/assets/image/icon/edit.svg";
+import RightIcon from "@/assets/image/icon/right-arrow.svg";
 
 const router = useRouter();
 const endpoint = ref("http://ai.solution.com/ID (학습)");
-
-const fieldLabels = {
-  linkedName: "연계명",
-  processType: "공정 종류",
-  processName: "공정명",
-  idName: "ID",
-  aiType: "AI 종류",
-  linkedServer: "서버 주소",
-};
 
 const fields = {
   linkedName: ref(""),
@@ -34,72 +24,52 @@ const fields = {
   linkedServer: ref(""),
 };
 
-const errorMessages = ref({
-  linkedName: "",
-  processType: "",
-  processName: "",
-  idName: "",
-  aiType: "",
-  linkedServer: "",
-});
-
 const alertVisible = ref(false);
 const alertMessage = ref("");
 const alertType = ref("error");
 
-const processTypeOptions = ["압연", "열처리", "코팅"];
-const processNameOptions = ["구미열압", "구미냉압", "포항코팅"];
-const aiTypeOptions = ["학습", "예측", "분석"];
-
-// 모달 관련 상태
-const isModalVisible = ref(false);
-const modalMessage = ref("연계를 추가하시겠습니까?");
-
-// 서버 테스트 성공 여부 추적
-const isServerTestSuccessful = ref(false);
-
-// 서버 테스트 진행 여부 (모달 방지)
-const isTestingServer = ref(false);
-
-// 필드 검증
-const validateField = (key) => {
-  if (!fields[key].value.trim()) {
-    errorMessages.value[key] = `${fieldLabels[key]}을(를) 입력해주세요.`;
-    return false;
-  }
-  errorMessages.value[key] = "";
-  return true;
+// ✅ 공정 종류별 공정명 매핑
+const processMapping = {
+  "압연": ["구미열압", "구미냉압"],
+  "열처리": ["포항저온", "포항고온"],
+  "코팅": ["포항코팅", "구미코팅"]
 };
 
-// 서버 연결 테스트
-const testServerConnection = () => {
-  if (!validateField("linkedServer")) return;
-
-  isTestingServer.value = true; // 서버 테스트 중 상태 설정
-
-  alertMessage.value = `서버 테스트 성공: ${fields.linkedServer.value}`;
-  alertType.value = "success";
-  alertVisible.value = true;
-
-  isServerTestSuccessful.value = true;
-
-  setTimeout(() => {
-    alertVisible.value = false;
-    isTestingServer.value = false; // 테스트 완료 후 모달 허용
-  }, 3000);
+// ✅ 공정명별 AI 종류 매핑
+const aiMapping = {
+  "구미열압": ["학습", "예측"],
+  "구미냉압": ["학습"],
+  "포항저온": ["분석"],
+  "포항고온": ["예측"],
+  "포항코팅": ["학습", "예측"],
+  "구미코팅": ["분석", "학습"]
 };
 
-// 모든 필드가 입력되고 서버 테스트가 성공해야 폼이 유효하다고 판단
-const isFormValid = computed(() => {
-  return Object.keys(fields).every((key) => fields[key].value.trim()) && isServerTestSuccessful.value;
+// ✅ 선택 가능한 옵션 (Computed)
+const processNameOptions = computed(() => processMapping[fields.processType.value] || []);
+const aiTypeOptions = computed(() => aiMapping[fields.processName.value] || []);
+
+// ✅ 비활성화 상태 설정
+const isProcessNameDisabled = computed(() => !fields.processType.value);
+const isAiTypeDisabled = computed(() => !fields.processName.value);
+
+watch(() => fields.processType.value, (newValue) => {
+  fields.processName.value = ""; // ✅ 공정명 초기화
+  fields.aiType.value = ""; // ✅ AI 종류 초기화
 });
 
-// 완료 버튼 클릭 시 모달 띄우기
-const submitAdd = () => {
-  if (isTestingServer.value) return; // 서버 테스트 중에는 모달을 띄우지 않음
 
-  if (!isFormValid.value) {
-    alertMessage.value = "모든 필드를 입력하고 서버 테스트를 완료해주세요.";
+const leftButtons = [
+  { label: "파라미터 등록", type: "primary", iconSrc: RightIcon, action: () => router.push("/user/solution/params") },
+  { label: "파라미터 수정", type: "secondary", iconSrc: EditIcon, action: () => router.push("/parameter/edit") },
+];
+
+
+// ✅ 제출 버튼 핸들러
+const submitAdd = () => {
+  if (!fields.linkedName.value || !fields.processType.value || !fields.processName.value ||
+    !fields.idName.value || !fields.aiType.value || !fields.linkedServer.value) {
+    alertMessage.value = "모든 필드를 입력해주세요.";
     alertType.value = "error";
     alertVisible.value = true;
     return;
@@ -107,26 +77,77 @@ const submitAdd = () => {
   isModalVisible.value = true;
 };
 
-// 모달 관련 처리
+// ✅ 모달 관련 처리
+const isModalVisible = ref(false);
 const onConfirmSubmit = () => {
   isModalVisible.value = false;
-  // 여기에 실제 연계 추가 로직을 넣으시면 됩니다.
 };
 
 const closeModal = () => {
   isModalVisible.value = false;
 };
 
-// 버튼 설정
-const leftButtons = [
-  { label: "파라미터 등록", type: "primary", iconSrc: RightIcon, action: () => router.push("/user/solution/params") },
-  { label: "파라미터 수정", type: "secondary", iconSrc: EditIcon, action: () => router.push("/parameter/edit") },
-];
 
-const rightButtons = [
-  { label: "완료", type: "primary", action: submitAdd }
-];
+const serverTestAlertMessage = ref(""); // 에러 메시지 (p 태그)
+const isTestCompleteModalVisible = ref(false); // 서버 테스트 결과 모달 상태
+const testResultMessage = ref(""); // 모달 메시지
+const testResultType = ref("success"); // 모달 타입
+const isServerTestSuccess = ref(false); // 서버 테스트 성공 여부
+
+
+const isSubmitDisabled = computed(() => {
+  return !(
+    fields.linkedName.value &&
+    fields.processType.value &&
+    fields.processName.value &&
+    fields.idName.value &&
+    fields.aiType.value &&
+    fields.linkedServer.value &&
+    isServerTestSuccess.value // 서버 테스트 성공 여부 체크
+  );
+});
+
+
+const testServerConnection = async () => {
+  // 입력값 검증
+  if (!fields.linkedServer.value.trim()) {
+    serverTestAlertMessage.value = "서버 주소를 입력해주세요.";
+    return;
+  }
+
+  // 에러 메시지 초기화
+  serverTestAlertMessage.value = "";
+
+  // ✅ 모의 서버 테스트 (실제 API 요청 대신 setTimeout 사용)
+  setTimeout(() => {
+    const isAvailable = fields.linkedServer.value.startsWith("http"); // ✅ 간단한 유효성 검사
+
+    if (isAvailable) {
+      testResultMessage.value = "서버 연결이 성공했습니다.";
+      testResultType.value = "success";
+    } else {
+      testResultMessage.value = "서버 연결에 실패했습니다.";
+      testResultType.value = "error";
+    }
+
+    // 결과 모달 열기
+    isTestCompleteModalVisible.value = true;
+  }, 2000); // 2초 후 테스트 완료
+};
+// 모달 닫기 핸들러
+const confirmTestCompletion = () => {
+  if (testResultType.value === "success") {
+    isServerTestSuccess.value = true; // 성공했을 경우 상태 변경
+  }
+  isTestCompleteModalVisible.value = false;
+};
+
+// ✅ "취소" 버튼 (모달 닫기만 함)
+const cancelTestCompletion = () => {
+  isTestCompleteModalVisible.value = false;
+};
 </script>
+
 
 <template>
   <div class="contain">
@@ -146,42 +167,36 @@ const rightButtons = [
             <div class="input-wrap">
               <div class="input-item">
                 <p class="tit">연계명</p>
-                <Input v-model="fields.linkedName.value" placeholder="연계명을 입력하세요"
-                  :errorMessage="errorMessages.linkedName" @blur="validateField('linkedName')" />
+                <Input v-model="fields.linkedName.value" placeholder="연계명을 입력하세요" />
               </div>
 
               <div class="input-item">
                 <p class="tit">공정종류</p>
-                <DropdownMenu v-model="fields.processType.value" :options="processTypeOptions" placeholder="공정종류 선택"
-                  :errorMessage="errorMessages.processType" @blur="validateField('processType')" type="radio"
-                  :arrowIcon="customArrowIcon" />
+                <DropdownMenu v-model="fields.processType.value" :options="Object.keys(processMapping)"
+                  placeholder="공정종류 선택" type="radio" :arrowIcon="customArrowIcon" />
               </div>
 
               <div class="input-item">
                 <p class="tit">공정명</p>
                 <DropdownMenu v-model="fields.processName.value" :options="processNameOptions" placeholder="공정명 선택"
-                  :errorMessage="errorMessages.processName" @blur="validateField('processName')" type="radio"
-                  :arrowIcon="customArrowIcon" />
-              </div>
-
-              <div class="input-item">
-                <p class="tit">ID</p>
-                <Input v-model="fields.idName.value" placeholder="ID를 입력하세요" :errorMessage="errorMessages.idName"
-                  @blur="validateField('idName')" />
+                  type="radio" :arrowIcon="customArrowIcon" :isDisabled="isProcessNameDisabled" />
               </div>
 
               <div class="input-item">
                 <p class="tit">AI 종류</p>
-                <DropdownMenu v-model="fields.aiType.value" :options="aiTypeOptions" placeholder="AI 종류 선택"
-                  :errorMessage="errorMessages.aiType" @blur="validateField('aiType')" type="radio"
-                  :arrowIcon="customArrowIcon" />
+                <DropdownMenu v-model="fields.aiType.value" :options="aiTypeOptions" placeholder="AI 종류 선택" type="radio"
+                  :arrowIcon="customArrowIcon" :isDisabled="isAiTypeDisabled" />
               </div>
 
               <div class="input-item">
-                <p class="tit">서버등록<br>(예측)</p>
-                <Input v-model="fields.linkedServer.value" placeholder="서버 주소를 입력해주세요" showCheckButton
-                  checkButtonLabel="테스트" @checkValue="testServerConnection" :errorMessage="errorMessages.linkedServer"
-                  @blur="validateField('linkedServer')" class="widthCheck" />
+                <p class="tit">서버등록</p>
+                <Input v-model="fields.linkedServer.value" placeholder="서버 주소를 입력하세요" showCheckButton
+                  checkButtonLabel="테스트" @checkValue="testServerConnection" />
+                <!-- 에러 메시지 (입력값 없을 경우) -->
+                <p v-if="serverTestAlertMessage" class="ipt-error" role="alert">
+                  {{ serverTestAlertMessage }}
+                </p>
+
               </div>
             </div>
           </template>
@@ -192,13 +207,22 @@ const rightButtons = [
               :iconSrc="btn.iconSrc" @click="btn.action" />
           </div>
           <div class="right-buttons">
-            <Button v-for="(btn, index) in rightButtons" :key="index" :label="btn.label" :type="btn.type"
-              @click="btn.action" :disabled="!isFormValid" class="add-btn" />
+            <Button label="완료" type="primary" @click="submitAdd" class="add-btn" :disabled="isSubmitDisabled" />
           </div>
         </div>
       </CardBox>
     </div>
-    <Modal :show="isModalVisible" :title="'연계추가'" :message="modalMessage" @update:show="isModalVisible = $event"
-      @confirm="onConfirmSubmit" @cancel="closeModal" />
+
+    <!-- 서버 테스트 결과 모달 -->
+    <Modal :show="isTestCompleteModalVisible" title="서버 테스트 결과" :message="testResultMessage" :type="testResultType"
+      :showCancel="testResultType === 'success'" confirmText="확인" cancelText="취소"
+      @update:show="isTestCompleteModalVisible = $event" @confirm="confirmTestCompletion" class="confirmModal"
+      @cancel="cancelTestCompletion" />
+
+
+
+    <!--  연계 추가 확인 모달 -->
+    <Modal :show="isModalVisible" title="연계추가" message="연계를 추가하시겠습니까?" @update:show="isModalVisible = $event"
+      @confirm="onConfirmSubmit" @cancel="closeModal" class="confirmModal" />
   </div>
 </template>

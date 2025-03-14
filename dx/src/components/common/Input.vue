@@ -28,14 +28,6 @@ const emits = defineEmits(['update:modelValue', 'validateField', 'checkValue']);
 const visible = ref(false);
 const isFocused = ref(false);
 
-// errorMessage를 반응형으로 감싸기
-const errorText = ref(props.errorMessage || '');
-
-// 부모에서 errorMessage가 변경될 때 감지하여 반영
-watch(() => props.errorMessage, (newVal) => {
-    errorText.value = newVal || '';
-});
-
 // modelValue와 동기화된 computed 속성
 const inputValue = computed({
     get: () => props.modelValue || '', // ✅ undefined 방지
@@ -57,7 +49,7 @@ const handleCheckClick = () => {
             <label :for="name" class="checkbox-label">{{ checkboxLabel }}</label>
         </div>
 
-        <div v-else class="input" :class="{ error: !!errorText, focused: isFocused }">
+        <div v-else class="input" :class="{ error: !!props.errorMessage, focused: isFocused }">
             <input :type="type === 'password' && !visible ? 'password' : 'text'" v-model="inputValue" class="ipt"
                 :placeholder="placeholder" @focus="isFocused = true"
                 @blur="isFocused = false; emits('validateField', name, inputValue?.trim() || '')" :readonly="isReadonly"
@@ -73,6 +65,8 @@ const handleCheckClick = () => {
                 {{ checkButtonLabel }}
             </button>
         </div>
-        <p v-show="errorText" class="ipt-error" role="alert">{{ errorText }}</p>
+
+        <!-- 에러 메시지 -->
+        <p v-if="props.errorMessage" class="ipt-error" role="alert">{{ props.errorMessage }}</p>
     </div>
 </template>

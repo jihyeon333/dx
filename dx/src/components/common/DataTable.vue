@@ -1,17 +1,21 @@
 <script setup>
 import { ref, computed, watch } from "vue";
+import { useRouter } from "vue-router";
 import DropdownMenu from "@/components/common/DropdownMenu.vue"; // 드롭다운 컴포넌트 임포트
 
 const props = defineProps({
   columns: Array,
   data: Array,
   extraColumn: Object,
-  orderColumn: Object, // 추가된 부분
+  orderColumn: Object,
   selectable: Boolean,
 });
 
+const emit = defineEmits(["update:data"]);
 const selectedRows = ref([]);
 const allCheckRef = ref(null);
+const router = useRouter();
+const isEditingRow = ref(null); // 수정 모드 상태 추가
 
 // 데이터가 없는지 확인
 const isEmpty = computed(() => props.data.length === 0);
@@ -27,7 +31,7 @@ const isIndeterminate = computed(() => {
 });
 
 // 'indeterminate' 상태를 체크박스에 반영
-watch([selectedRows, props.data], () => {
+watch([selectedRows, () => props.data], () => {
   if (allCheckRef.value) {
     allCheckRef.value.indeterminate = isIndeterminate.value;
   }
@@ -52,9 +56,19 @@ const toggleAll = () => {
   }
 };
 
-// 드롭다운에서 선택한 값을 dataValue로 설정하는 함수
+// 페이지 이동 함수 (필요한 경우 개별적으로 사용)
+const goToDetailPage = (row, columnKey) => {
+  console.log(`Navigating to detail page with ID: ${row.id}, Column: ${columnKey}`);
+
+  router.push({
+    name: "SolutionEdit",
+    query: { id: row.id, column: columnKey },
+  });
+};
+
+// 데이터 값 업데이트 핸들러 (페이지 이동 제거됨)
 const updateDataValue = (row, newValue) => {
-  row.dataValue = newValue; // 해당 행의 dataValue를 수정
+  emit("update:data", row.id, newValue); // 부모 컴포넌트에서 데이터 업데이트 처리
 };
 
 defineExpose({
@@ -70,7 +84,7 @@ defineExpose({
           <col v-if="selectable" style="width: 50px;" />
           <col v-for="col in columns" :key="col.key" :style="{ width: col.width || 'auto' }" />
           <col v-if="extraColumn" :style="{ width: extraColumn.width || 'auto' }" />
-          <col v-if="orderColumn" :style="{ width: orderColumn.width || 'auto' }" /> <!-- 추가된 부분 -->
+          <col v-if="orderColumn" :style="{ width: orderColumn.width || 'auto' }" />
         </colgroup>
         <thead>
           <tr>
@@ -85,20 +99,12 @@ defineExpose({
               {{ col.label }}
             </th>
             <th v-if="extraColumn">{{ extraColumn.label }}</th>
-            <th v-if="orderColumn">{{ orderColumn.label }}</th> <!-- 추가된 부분 -->
+            <th v-if="orderColumn">{{ orderColumn.label }}</th>
           </tr>
         </thead>
       </table>
     </div>
-
-    <!-- 데이터가 없을 경우 "내용 없음" 메시지 표시 -->
-    <div v-if="isEmpty" class="non-content">
-      <i class="ico"></i>
-      <span>내용이 없습니다.</span>
-    </div>
-
-    <!-- 데이터가 있을 경우 테이블 렌더링 -->
-    <div v-else class="table-body">
+    <div class="table-body">
       <table class="table-col">
         <colgroup>
           <col v-if="selectable" style="width: 50px;" />
@@ -107,7 +113,7 @@ defineExpose({
           <col v-if="orderColumn" :style="{ width: orderColumn.width || 'auto' }" />
         </colgroup>
         <tbody>
-          <tr v-for="(row) in data" :key="row.id">
+          <tr v-for="row in data" :key="row.id">
             <td v-if="selectable">
               <div class="checkbox-container">
                 <input :id="'check-' + row.id" type="checkbox" class="unitcheck checknum"
@@ -122,10 +128,13 @@ defineExpose({
                   {{ row[col.key] }}
                 </p>
                 <DropdownMenu v-if="isEditingRow === row" v-model="row[col.key]" :options="['JSON', 'TEXT']"
-                  @change="updateDataValue(row, row[col.key])" />
+                  @update:modelValue="(newValue) => updateDataValue(row, newValue)" />
               </template>
               <template v-else>
-                <p :class="col.align || ''">{{ row[col.key] || "" }}</p>
+                <p :class="[{ link: col.clickable }, col.align || '']"
+                  @click="col.clickable ? goToDetailPage(row, col.key) : null">
+                  {{ row[col.key] || "" }}
+                </p>
               </template>
             </td>
             <td v-if="extraColumn">
@@ -140,7 +149,7 @@ defineExpose({
               <div class="button-list">
                 <button v-for="action in orderColumn.actions" :key="action.label" @click="() => action.handler(row)"
                   :class="['action-button', action.className]">
-                  <img :src="action.imgSrc" alt="action.label" /> <!-- 이미지 표시 -->
+                  <img :src="action.imgSrc" alt="action.label" />
                 </button>
               </div>
             </td>

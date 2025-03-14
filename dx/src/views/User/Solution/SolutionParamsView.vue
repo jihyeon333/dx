@@ -14,7 +14,11 @@ import Modal from "@/components/common/Modal.vue";
 const tabs = ['요청 파라미터', '응답 파라미터'];
 const activeTab = ref(localStorage.getItem("activeTab") || tabs[0]);
 watch(activeTab, (newTab) => {
-  localStorage.setItem("activeTab", newTab);
+  if (!tabs.includes(newTab)) {
+    activeTab.value = tabs[0]; // 강제로 첫 번째 탭으로 설정
+  } else {
+    localStorage.setItem("activeTab", newTab); // 유효하면 저장
+  }
 });
 
 // 선택된 옵션 (입출력 형식)

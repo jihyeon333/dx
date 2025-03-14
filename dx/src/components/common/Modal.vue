@@ -15,6 +15,7 @@ const props = defineProps({
     overlayClosable: { type: Boolean, default: true },
     showCloseButton: { type: Boolean, default: false },
     align: { type: String, default: 'center' },
+    showCancel: { type: Boolean, default: true },
 });
 
 const emits = defineEmits(['confirm', 'cancel', 'close']);
@@ -60,7 +61,9 @@ const contentClass = computed(() => ({
 
             <div class="modal-buttons">
                 <slot name="footer">
-                    <button class="modal-button cancel" @click="cancelAction">{{ cancelText }}</button>
+                    <button v-if="showCancel" class="modal-button cancel" @click="cancelAction">
+                        {{ cancelText }}
+                    </button>
                     <button class="modal-button" @click="confirmAction">{{ confirmText }}</button>
                 </slot>
             </div>

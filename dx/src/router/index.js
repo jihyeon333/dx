@@ -3,23 +3,23 @@ import DefaultLayout from "@/layouts/DefaultLayout.vue";
 import UserLayout from "@/layouts/UserLayout.vue";
 
 // ✅ Lazy Loading 적용
-const Login = () => import("@/views/Login/LoginView.vue");
-const SignUp = () => import("@/views/Login/SignUpView.vue");
-const FindId = () => import("@/views/Login/FindIdView.vue");
-const FindPw = () => import("@/views/Login/FindPasswordView.vue");
-const Process = () => import("@/views/User/Process/ProcessView.vue");
-const Data = () => import("@/views/User/Data/DataView.vue");
-const Device = () => import("@/views/User/Device/DeviceView.vue");
-const DTlink = () => import("@/views/User/DTlink/DTlinkView.vue");
-const Solution = () => import("@/views/User/Solution/SolutionView.vue");
+const login = () => import("@/views/Login/LoginView.vue");
+const signUp = () => import("@/views/Login/SignUpView.vue");
+const findId = () => import("@/views/Login/FindIdView.vue");
+const findPw = () => import("@/views/Login/FindPasswordView.vue");
+const process = () => import("@/views/User/Process/ProcessView.vue");
+const data = () => import("@/views/User/Data/DataView.vue");
+const device = () => import("@/views/User/Device/DeviceView.vue");
+const dtLink = () => import("@/views/User/DTlink/DTlinkView.vue");
+const solution = () => import("@/views/User/Solution/SolutionView.vue");
 
 // ✅ 솔루션 내부 페이지 Lazy Loading 적용
-const SolutionMain = () => import("@/views/User/Solution/SolutionMainView.vue");
-const SolutionAdd = () => import("@/views/User/Solution/SolutionAddView.vue");
-const SolutionEdit = () => import("@/views/User/Solution/SolutionEditView.vue");
-const SolutionParams = () => import("@/views/User/Solution/SolutionParamsView.vue");
+const solutionMain = () => import("@/views/User/Solution/SolutionMainView.vue");
+const solutionAdd = () => import("@/views/User/Solution/SolutionAddView.vue");
+const solutionEdit = () => import("@/views/User/Solution/SolutionEditView.vue");
+const solutionParams = () => import("@/views/User/Solution/SolutionParamsView.vue");
 
-const MemberList = () => import("@/views/Admin/Mypage/MemberLIstView.vue");
+const adminDashboard = () => import("@/views/Admin/Dashboard/AdminDashboardView.vue");
 const NotFound = () => import("@/views/Error/ForbiddenView.vue");
 
 const routes = [
@@ -34,10 +34,10 @@ const routes = [
 		path: "/auth",
 		component: DefaultLayout,
 		children: [
-			{ path: "login", name: "Login", component: Login },
-			{ path: "signup", name: "SignUp", component: SignUp },
-			{ path: "find-id", name: "FindId", component: FindId },
-			{ path: "find-password", name: "FindPassword", component: FindPw },
+			{ path: "login", name: "Login", component: login },
+			{ path: "signup", name: "SignUp", component: signUp },
+			{ path: "findId", name: "FindId", component: findId },
+			{ path: "findPassword", name: "FindPassword", component: findPw },
 		],
 	},
 
@@ -47,18 +47,18 @@ const routes = [
 		component: UserLayout,
 		meta: [{ requiresAuth: true }],
 		children: [
-			{ path: "process", name: "Process", component: Process },
-			{ path: "data", name: "Data", component: Data },
-			{ path: "device", name: "Device", component: Device },
-			{ path: "dtlink", name: "DTlink", component: DTlink },
+			{ path: "process", name: "Process", component: process },
+			{ path: "data", name: "Data", component: data },
+			{ path: "device", name: "Device", component: device },
+			{ path: "dtLink", name: "DTlink", component: dtLink },
 			{
 				path: "solution",
-				component: Solution, // 솔루션 메인 레이아웃
+				component: solution, // 솔루션 메인 레이아웃
 				children: [
-					{ path: "", name: "SolutionMain", component: SolutionMain }, // 기본 페이지
-					{ path: "add", name: "SolutionAdd", component: SolutionAdd },
-					{ path: "edit", name: "SolutionEdit", component: SolutionEdit, props: true },
-					{ path: "params", name: "SolutionParams", component: SolutionParams },
+					{ path: "", name: "SolutionMain", component: solutionMain }, // 기본 페이지
+					{ path: "add", name: "SolutionAdd", component: solutionAdd },
+					{ path: "edit", name: "SolutionEdit", component: solutionEdit, props: true },
+					{ path: "params", name: "SolutionParams", component: solutionParams },
 				],
 			},
 		],
@@ -69,7 +69,7 @@ const routes = [
 		path: "/admin",
 		component: DefaultLayout,
 		meta: { requiresAuth: true, adminOnly: true },
-		children: [{ path: "maypage", name: "MemberList", component: MemberList }],
+		children: [{ path: "dashboard", name: "AdminDashboard", component: adminDashboard }],
 	},
 
 	// ✅ 404 페이지

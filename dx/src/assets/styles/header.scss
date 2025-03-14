@@ -144,7 +144,12 @@
 .header-wrap.guest-nav .top-nav .gnb .nav-list .menu a:hover {
 	background-color: #162e47;
 }
-
+.header-wrap.guest-nav .main-nav {
+	display: none;
+}
+.header-wrap .main-nav {
+	display: block;
+}
 #gnb {
 	width: 275px;
 	position: fixed;

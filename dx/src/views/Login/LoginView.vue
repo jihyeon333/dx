@@ -14,10 +14,12 @@ const loginErrorMessage = ref("");
 // ✅ 로그인 탭 상태 유지
 const tabs = ['일반 로그인', '관리자 로그인'];
 const activeTab = ref(localStorage.getItem("activeTab") || tabs[0]); // ✅ localStorage에서 초기값 가져오기
-
-// ✅ `activeTab`이 변경될 때마다 `localStorage`에 저장
 watch(activeTab, (newTab) => {
-    localStorage.setItem("activeTab", newTab);
+    if (!tabs.includes(newTab)) {
+        activeTab.value = tabs[0]; // 강제로 첫 번째 탭으로 설정
+    } else {
+        localStorage.setItem("activeTab", newTab); // 유효하면 저장
+    }
 });
 
 // ✅ 로그인 에러 핸들링
