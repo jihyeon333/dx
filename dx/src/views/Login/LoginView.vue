@@ -7,13 +7,13 @@ import LoginForm from '@/components/Login/LoginForm.vue';
 import Alert from '@/components/common/Alert.vue';
 
 const router = useRouter();
-const emits = defineEmits(["login"]); // ✅ 부모(App.vue)로 로그인 이벤트 전달
+const emits = defineEmits(["login"]); //  부모(App.vue)로 로그인 이벤트 전달
 const loginError = ref(false);
 const loginErrorMessage = ref("");
 
-// ✅ 로그인 탭 상태 유지
+//  로그인 탭 상태 유지
 const tabs = ['일반 로그인', '관리자 로그인'];
-const activeTab = ref(localStorage.getItem("activeTab") || tabs[0]); // ✅ localStorage에서 초기값 가져오기
+const activeTab = ref(localStorage.getItem("activeTab") || tabs[0]); //  localStorage에서 초기값 가져오기
 watch(activeTab, (newTab) => {
     if (!tabs.includes(newTab)) {
         activeTab.value = tabs[0]; // 강제로 첫 번째 탭으로 설정
@@ -22,7 +22,7 @@ watch(activeTab, (newTab) => {
     }
 });
 
-// ✅ 로그인 에러 핸들링
+//  로그인 에러 핸들링
 const setError = ({ error, message }) => {
     loginError.value = false;
     setTimeout(() => {
@@ -31,10 +31,10 @@ const setError = ({ error, message }) => {
     }, 10);
 };
 
-// ✅ 로그인 성공 시 실행
+//  로그인 성공 시 실행
 const handleLoginSuccess = ({ userType }) => {
-    emits("login"); // ✅ App.vue의 `handleLogin()` 실행
-    localStorage.setItem("activeTab", activeTab.value); // ✅ 로그인 후에도 activeTab 유지
+    emits("login"); //  App.vue의 `handleLogin()` 실행
+    localStorage.setItem("activeTab", activeTab.value); //  로그인 후에도 activeTab 유지
     if (userType === "admin") {
         router.push("/admin");
     } else {
@@ -53,7 +53,7 @@ const handleLoginSuccess = ({ userType }) => {
                 </div>
             </section>
 
-            <!-- ✅ 로그인 탭 (localStorage로 유지) -->
+            <!--  로그인 탭 (localStorage로 유지) -->
             <section class="tab-container">
                 <div class="tabs">
                     <button v-for="(tab, index) in tabs" :key="index" :class="{ tab: true, active: activeTab === tab }"

@@ -20,7 +20,7 @@ const searchQuery = ref("");
 
 const emits = defineEmits(["filterChange", "buttonClick"]);
 
-// ✅ 버튼 클릭 이벤트 핸들러 추가
+//  버튼 클릭 이벤트 핸들러 추가
 const handleButtonClick = (button) => {
   if (button.onClick) {
     button.onClick(); // 버튼의 클릭 이벤트 실행

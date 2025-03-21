@@ -5,8 +5,16 @@ import DropdownMenu from "@/components/common/DropdownMenu.vue"; // 드롭다운
 
 const props = defineProps({
   columns: Array,
-  data: Array,
-  extraColumn: Object,
+  data: {
+    type: Array,
+    default: () => [],
+  },
+  extraColumn: {
+    type: Object,
+    default: () => ({
+      getActions: () => [], // 기본적으로 빈 배열 반환하여 안전성 확보
+    }),
+  },
   orderColumn: Object,
   selectable: Boolean,
 });
@@ -38,13 +46,13 @@ watch([selectedRows, () => props.data], () => {
 });
 
 // 개별 체크박스 선택 핸들러
-const toggleSelection = (id) => {
-  if (!id) return;
-  if (selectedRows.value.includes(id)) {
-    selectedRows.value = selectedRows.value.filter((rowId) => rowId !== id);
+const toggleSelection = (row) => {
+  if (selectedRows.value.includes(row)) {
+    selectedRows.value = selectedRows.value.filter((r) => r !== row);
   } else {
-    selectedRows.value.push(id);
+    selectedRows.value.push(row);
   }
+  emit("update:selectedRows", selectedRows.value);
 };
 
 // 전체 선택 / 해제 핸들러
@@ -69,6 +77,7 @@ const goToDetailPage = (row, columnKey) => {
 // 데이터 값 업데이트 핸들러 (페이지 이동 제거됨)
 const updateDataValue = (row, newValue) => {
   emit("update:data", row.id, newValue); // 부모 컴포넌트에서 데이터 업데이트 처리
+  isEditingRow.value = null;
 };
 
 defineExpose({
@@ -132,15 +141,16 @@ defineExpose({
               </template>
               <template v-else>
                 <p :class="[{ link: col.clickable }, col.align || '']"
-                  @click="col.clickable ? goToDetailPage(row, col.key) : null">
+                  @click="col.clickable ? $emit('cell-click', row) : null">
                   {{ row[col.key] || "" }}
                 </p>
               </template>
             </td>
             <td v-if="extraColumn">
               <div class="button-list">
-                <button v-for="action in extraColumn.actions" :key="action.label" @click="() => action.handler(row)"
-                  :class="['action-button', action.className]">
+                <button
+                  v-for="action in (extraColumn.actions || (extraColumn.getActions ? extraColumn.getActions(row) : []))"
+                  :key="action.label" @click="() => action.handler(row)" :class="['action-button', action.className]">
                   {{ action.label }}
                 </button>
               </div>

@@ -37,6 +37,17 @@
 	max-width: 500px;
 	width: 100%;
 }
+
+.alertModal .modal-article {
+	max-width: 400px;
+}
+
+.alertModal .modal-article .modal-content {
+	padding: 0 30px;
+	display: flex;
+	gap: 0;
+}
+
 .tableModal .modal-article {
 	max-width: 500px;
 	width: 100%;
@@ -122,7 +133,34 @@
 	line-height: 1;
 	color: #003c7a;
 }
-
+.modal-content .text {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 10px;
+}
+.modal-content .text .txt {
+	width: 100%;
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-start;
+	align-items: center;
+	gap: 5px;
+}
+.modal-content .text .txt b {
+	font-weight: 600;
+	color: #555555;
+	font-size: 16px;
+	min-width: 50px;
+}
+.modal-content .text .txt p {
+	font-size: 16px;
+	font-weight: 500;
+	letter-spacing: -0.75px;
+	color: #717171;
+	word-break: break-word;
+}
 .modal-table {
 	width: 100%;
 	border-collapse: collapse;
@@ -214,4 +252,24 @@
 
 .text-right {
 	text-align: right;
+}
+
+.signModal .modal-header {
+	display: none;
+}
+.editModal .modal-header {
+	display: none;
+}
+
+.informModal .modal-article {
+	width: 400px;
+}
+.informModal .modal-header {
+	padding: 20px 30px 0;
+}
+.informModal .modal-content {
+	padding: 0 30px;
+}
+.informModal .modal-buttons {
+	padding: 0 30px 30px;
 }

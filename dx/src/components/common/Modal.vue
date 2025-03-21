@@ -16,6 +16,7 @@ const props = defineProps({
     showCloseButton: { type: Boolean, default: false },
     align: { type: String, default: 'center' },
     showCancel: { type: Boolean, default: true },
+    showButtons: { type: Boolean, default: true }
 });
 
 const emits = defineEmits(['confirm', 'cancel', 'close']);
@@ -59,7 +60,7 @@ const contentClass = computed(() => ({
                 <slot></slot>
             </div>
 
-            <div class="modal-buttons">
+            <div class="modal-buttons" v-if="showButtons">
                 <slot name="footer">
                     <button v-if="showCancel" class="modal-button cancel" @click="cancelAction">
                         {{ cancelText }}

@@ -20,7 +20,6 @@ const route = useRoute();
 
 const apiId = ref(route.query.id);
 
-
 const fields = ref([]);
 
 const getParameters = async () => {

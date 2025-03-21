@@ -29,7 +29,7 @@ const handleGoToLogin = () => {
   router.push('/LoginView');
 };
 
-// ✅ "다시 찾기" 버튼 클릭 시 아이디 입력창에도 에러 메시지 표시
+//  "다시 찾기" 버튼 클릭 시 아이디 입력창에도 에러 메시지 표시
 const handleRetry = () => {
   isModalOpen.value = false;
   if (findPasswordFormRef.value) {
@@ -42,7 +42,7 @@ const handleRetry = () => {
   <div class="login-wrap">
     <div class="find-box">
       <section class="form">
-        <!-- ✅ `ref="findPasswordFormRef"`으로 변경 -->
+        <!--  `ref="findPasswordFormRef"`으로 변경 -->
         <FindPassWordForm ref="findPasswordFormRef" @show-modal="showModal" />
       </section>
     </div>

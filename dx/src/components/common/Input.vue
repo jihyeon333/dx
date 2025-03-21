@@ -4,7 +4,7 @@ import eye from '@/assets/image/icon/Eye.svg';
 import eyeClose from '@/assets/image/icon/Eye_Closed.svg';
 
 const props = defineProps({
-    modelValue: [String, Number, Boolean], // ✅ modelValue 사용
+    modelValue: [String, Number, Boolean], //  modelValue 사용
     placeholder: String,
     type: {
         type: String,
@@ -19,8 +19,8 @@ const props = defineProps({
     },
     isCheckDisabled: Boolean,
     checkboxLabel: String,
-    isReadonly: Boolean, // ✅ 읽기 전용 속성
-    isDisabled: Boolean // ✅ 비활성화 속성
+    isReadonly: Boolean, //  읽기 전용 속성
+    isDisabled: Boolean //  비활성화 속성
 });
 
 const emits = defineEmits(['update:modelValue', 'validateField', 'checkValue']);
@@ -30,9 +30,9 @@ const isFocused = ref(false);
 
 // modelValue와 동기화된 computed 속성
 const inputValue = computed({
-    get: () => props.modelValue || '', // ✅ undefined 방지
+    get: () => props.modelValue || '', //  undefined 방지
     set: (value) => {
-        emits('update:modelValue', value || ''); // ✅ undefined 방지
+        emits('update:modelValue', value || ''); //  undefined 방지
         emits('validateField', props.name, value?.trim() || '');
     }
 });
@@ -61,7 +61,8 @@ const handleCheckClick = () => {
             </div>
 
             <!-- 확인 버튼 -->
-            <button v-if="showCheckButton" class="check-btn" @click="handleCheckClick" :disabled="isCheckDisabled">
+            <button type="button" v-if="showCheckButton" class="check-btn" @click="handleCheckClick"
+                :disabled="isCheckDisabled">
                 {{ checkButtonLabel }}
             </button>
         </div>

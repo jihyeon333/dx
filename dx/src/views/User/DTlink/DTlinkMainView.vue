@@ -18,7 +18,8 @@ onMounted(() => init());
 
 const router = useRouter();
 
-const endpoint = ref("http://ai.solution.com/ID (학습)");
+const endpoint1 = ref("http://ai.solution.com/ID (학습)");
+const endpoint2 = ref("ws://dt.solution.com/ID");
 
 const aiTypes = ref(AI_TYPES);
 
@@ -114,13 +115,13 @@ const extraColumn = ref({
     return [{
       label: "보기",
       className: "btn-view",
-      handler: () => router.push({ name: "SolutionParams", query: { id: row.id } })
+      handler: () => router.push({ name: "dtLinkParams", query: { id: row.id } })
     }];
   }
 });
 
 const goToEditPage = (row) => {
-  router.push({ name: "SolutionEdit", query: { id: row.id } });
+  router.push({ name: "dtLinkEdit", query: { id: row.id } });
 };
 
 const openDeleteConfirmModal = () => {
@@ -156,12 +157,16 @@ const deleteRows = () => {
       <CardBox>
         <div class="content">
           <p>연계 endpoint :</p>
-          <Input v-model="endpoint" :is-disabled="true" readonly />
+          <Input v-model="endpoint1" :is-disabled="true" readonly />
+        </div>
+        <div class="content">
+          <p>연계 endpoint :</p>
+          <Input v-model="endpoint2" :is-disabled="true" readonly />
         </div>
       </CardBox>
       <div class="SearchBar right">
         <div class="buttons">
-          <Button class=" btn-success" @click="router.push({ name: 'SolutionAdd' })" label="추가" />
+          <Button class=" btn-success" @click="router.push({ name: 'dtLinkAdd' })" label="추가" />
           <Button class=" btn-delete" @click="openDeleteConfirmModal" label="삭제" />
         </div>
         <div class="SearchFilter">

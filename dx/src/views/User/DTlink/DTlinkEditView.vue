@@ -36,7 +36,6 @@ const errorMessages = ref({
   processName: "",
   idName: "",
   aiType: "",
-  predictionUrl: "",
 });
 
 const init = async () => {
@@ -88,12 +87,6 @@ watch(() => fields.value.processType, (newValue, oldValue) => {
   getProcessNames(newValue);
 });
 
-const isServerTestSuccess = ref(true);
-
-watch(() => fields.value.predictionUrl, (newValue, oldValue) => {
-  if (!oldValue) return;
-  isServerTestSuccess.value = false;
-});
 
 watch(() => fields.value, (newValue, oldValue) => {
   if (Object.keys(oldValue).length === 0) return;
@@ -109,24 +102,7 @@ const isCancelModalVisible = ref(false);
 
 const haveFieldsChanged = ref(false);
 
-//  서버 연결 테스트
-const testServerConnection = () => {
-  alertMessage.value = "서버 테스트 중...";
 
-  alertType.value = "info";
-
-  alertVisible.value = true;
-
-  setTimeout(() => {
-    alertMessage.value = `서버 테스트 성공: ${fields.value.predictionUrl}`;
-
-    alertType.value = "success";
-
-    isServerTestSuccess.value = true;
-
-    alertVisible.value = true;
-  }, 1000);
-};
 
 const isAllFieldsFilled = () => {
   return Object.entries(fields.value).every(([key, value]) => !!value);
@@ -176,9 +152,9 @@ const handleCancelClick = () => {
   isCancelModalVisible.value = true;
 };
 
-const isUpdateButtonDisabled = computed(() => { return !isAllFieldsFilled() || !isServerTestSuccess.value });
-
-const isTestButtonDisabled = computed(() => { return !fields.value.predictionUrl });
+const isUpdateButtonDisabled = computed(() => {
+  return !isAllFieldsFilled();
+});
 
 const goBack = () => {
   window.history.back();
@@ -221,31 +197,21 @@ const goBack = () => {
               <p class="tit">연계ID</p>
               <Input v-model="fields.endpoint" placeholder="연계ID를 입력하세요" :errorMessage="errorMessages.idName" />
             </div>
-
-            <div class="input-item">
-              <p class="tit">AI종류</p>
-              <DropdownMenu v-model="fields.type" :options="aiTypes.map(opt => opt.name)" type="radio"
-                placeholder="AI 종류 선택" />
-            </div>
-
-            <div class="input-item">
-              <p class="tit">서버주소</p>
-              <Input v-model="fields.predictionUrl" placeholder="서버주소를 입력해주세요" showCheckButton checkButtonLabel="테스트"
-                @checkValue="testServerConnection" :isCheckDisabled="isTestButtonDisabled" />
-            </div>
           </div>
         </Form>
 
         <div class="button-group right">
           <div class="buttons right-buttons">
             <Button label="취소" type="primary" class="cancel-btn" @click="handleCancelClick" />
-            <Button label="완료" type="primary" @click="handleUpdateClick" class="add-btn" :disabled="isUpdateButtonDisabled" />
+            <Button label="완료" type="primary" @click="handleUpdateClick" class="add-btn"
+              :disabled="isUpdateButtonDisabled" />
           </div>
         </div>
       </CardBox>
     </div>
 
-    <Modal :show="isModalVisible" title="연계 수정" :message="modalMessage" @confirm="executeUpdate" @cancel="isModalVisible = false" />
+    <Modal :show="isModalVisible" title="연계 수정" :message="modalMessage" @confirm="executeUpdate"
+      @cancel="isModalVisible = false" />
     <!-- 취소 확인 모달 -->
     <Modal :show="isCancelModalVisible" title="알림" confirmText="확인" cancelText="취소"
       @update:show="isCancelModalVisible = $event" @confirm="goBack" @cancel="isCancelModalVisible = false"

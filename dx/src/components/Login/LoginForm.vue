@@ -44,9 +44,9 @@ const submitLogin = () => {
         emits('updateError', { error: false, message: '' });
         emits('loginSuccess', { userType: user.role });
 
-        // ✅ 로그인 성공 정보를 query로 전달
+        //  로그인 성공 정보를 query로 전달
         if (user.role === 'admin') {
-            router.push({ path: '/admin/adminmypage', query: { success: true } });
+            router.push({ path: '/admin/mypage/userlist', query: { success: true } });
         } else {
             router.push({ path: '/user', query: { success: true } });
         }
@@ -83,9 +83,9 @@ const submitLogin = () => {
                         class="login-btn" @click="submitLogin" />
                 </div>
                 <div class="buttons">
-                    <router-link :to="{ path: '/auth/signup' }" replace class="find-btn">회원가입</router-link>
-                    <router-link :to="{ path: '/auth/find-id' }" replace class="find-btn">아이디찾기</router-link>
-                    <router-link :to="{ path: '/auth/find-password' }" replace class="find-btn">비밀번호찾기</router-link>
+                    <router-link :to="{ path: '/auth/signUp' }" replace class="find-btn">회원가입</router-link>
+                    <router-link :to="{ path: '/auth/findId' }" replace class="find-btn">아이디찾기</router-link>
+                    <router-link :to="{ path: '/auth/findPassword' }" replace class="find-btn">비밀번호찾기</router-link>
                 </div>
             </div>
         </template>

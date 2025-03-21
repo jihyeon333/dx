@@ -27,7 +27,6 @@ const fields = ref({
   processName: "",
   endpoint: "",
   type: "",
-  predictionUrl: "",
 });
 
 const errorMessages = ref({
@@ -36,7 +35,6 @@ const errorMessages = ref({
   processName: "",
   endpoint: "",
   type: "",
-  predictionUrl: "",
 });
 
 const processTypes = ref([]);
@@ -103,46 +101,10 @@ const executeRegistration = () => {
     .then(() => { router.push({ name: "SolutionMain" }) });
 };
 
-const isTestCompleteModalVisible = ref(false); // 서버 테스트 결과 모달 상태
-
-const testResultMessage = ref(""); // 모달 메시지
-
-const testResultType = ref("success"); // 모달 타입
-
-const isServerTestSuccess = ref(false); // 서버 테스트 성공 여부
-
 const isCancelModalVisible = ref(false);
 
-const testServerConnection = () => {
-  // const urlPattern = /^(https?:\/\/)[\w\-]+(\.[\w\-]+)+[/#?]?.*$/;
 
-  // 서버 등록 필드 값 확인
-  if (!fields.value.predictionUrl.trim()) {
-    errorMessages.value.predictionUrl = "서버 주소를 입력해주세요."; // 에러 메시지 설정
-    return;
-  }
 
-  // if (!urlPattern.test(fields.value.predictionUrl.trim())) {
-  //   errorMessages.value.predictionUrl = "유효한 서버 주소를 입력해주세요."; // 에러 메시지 설정
-  //   return;
-  // }
-
-  // 성공 처리
-  errorMessages.value.predictionUrl = ""; // 에러 메시지 초기화
-  testResultMessage.value = "서버 연결이 성공했습니다.";
-  testResultType.value = "success";
-  isServerTestSuccess.value = true;
-
-  // 성공 모달 띄우기
-  isTestCompleteModalVisible.value = true;
-};
-
-// "확인" 버튼 클릭 시 에러 메시지 삭제 및 버튼 비활성화
-const confirmTestCompletion = () => {
-  errorMessages.value.predictionUrl = ""; // 에러 메시지 삭제
-
-  isTestCompleteModalVisible.value = false;
-};
 
 const haveFieldsChanged = () => {
   return Object.entries(fields.value).some(([key, value]) => !!value);
@@ -156,10 +118,9 @@ const handleCancelClick = () => {
 
   isCancelModalVisible.value = true;
 }
-
-const isRegisterButtonDisabled = computed(() => { return !isAllFieldsFilled() || !isServerTestSuccess.value });
-
-const isTestButtonDisabled = computed(() => { return !fields.value.predictionUrl });
+const isRegisterButtonDisabled = computed(() => {
+  return !isAllFieldsFilled();
+});
 
 const goBack = () => {
   window.history.back();
@@ -203,36 +164,18 @@ const goBack = () => {
                 <p class="tit">연계ID</p>
                 <Input v-model="fields.endpoint" placeholder="연계ID를 입력하세요" :errorMessage="errorMessages.endpoint" />
               </div>
-
-              <div class="input-item">
-                <p class="tit">AI종류</p>
-                <DropdownMenu v-model="fields.type" :options="aiTypes.map(opt => opt.name)" placeholder="AI종류 선택"
-                  type="radio" :arrowIcon="customArrowIcon" />
-              </div>
-
-              <div class="input-item">
-                <p class="tit">서버주소</p>
-                <Input v-model="fields.predictionUrl" placeholder="서버주소를 입력하세요" showCheckButton checkButtonLabel="테스트"
-                  @checkValue="testServerConnection" :errorMessage="errorMessages.predictionUrl"
-                  :isCheckDisabled="isTestButtonDisabled" />
-              </div>
-
             </div>
           </template>
         </Form>
         <div class="button-group right">
           <div class="buttons right-buttons">
             <Button label="취소" type="primary" class="cancel-btn" @click="handleCancelClick" />
-            <Button label="완료" type="primary" @click="handleRegisterClick" class="add-btn" :disabled="isRegisterButtonDisabled" />
+            <Button label="완료" type="primary" @click="handleRegisterClick" class="add-btn"
+              :disabled="isRegisterButtonDisabled" />
           </div>
         </div>
       </CardBox>
     </div>
-
-    <!-- 서버 테스트 결과 모달 -->
-    <Modal :show="isTestCompleteModalVisible" title="서버 테스트 결과" :message="testResultMessage" type="success"
-      confirmText="확인" @update:show="isTestCompleteModalVisible = $event" @confirm="confirmTestCompletion"
-      :showCancel="false" class="confirmModal" />
     <!--  연계 추가 확인 모달 -->
     <Modal :show="isModalVisible" title="연계추가" message="연계를 추가하시겠습니까?" @update:show="isModalVisible = $event"
       @confirm="executeRegistration" @cancel=" isModalVisible = false" class="confirmModal" />

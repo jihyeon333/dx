@@ -114,6 +114,7 @@
 						font-size: 14px;
 						line-height: 1.4;
 						color: #b3b3b3;
+						font-weight: 400;
 						letter-spacing: -0.5px;
 						text-decoration: none;
 						transition: color 0.3s ease-in-out;
@@ -129,6 +130,10 @@
 						height: 11px;
 						background-color: #b3b3b3;
 						display: block;
+					}
+					.router-link-active {
+						color: #ffffff;
+						font-weight: 700;
 					}
 				}
 			}

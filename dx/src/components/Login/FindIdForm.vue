@@ -35,7 +35,7 @@ defineExpose({ resetForm }); // 부모 컴포넌트에서 `resetForm`을 직접 
 
 const handleCancel = () => {
   resetForm();
-  router.push({ name: "Login" }); // ✅ 네임드 라우트 사용
+  router.push({ name: "Login" }); //  네임드 라우트 사용
 };
 // 전화번호 자동 포맷팅 및 검증
 watch(() => fields.userPhone, (newValue) => {
@@ -108,7 +108,7 @@ const handleFindId = (event) => {
     <template #buttons>
       <div class="button-wrap">
         <div class="button">
-          <Button label="취소" type="button" @click="handleCancel" class="cancle-btn" />
+          <Button label="취소" type="button" @click="handleCancel" class="cancel-btn" />
         </div>
         <div class="button">
           <Button label="찾기" type="button" :disabled="disableRegister" @click="handleFindId" class="find-btn" />

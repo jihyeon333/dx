@@ -7,7 +7,6 @@
 	position: relative;
 	flex-direction: column;
 	gap: 20px;
-	padding-top: 80px;
 	.sign-title {
 		font-size: 20px;
 		font-weight: 600;
@@ -101,8 +100,14 @@
 				height: 100%;
 				position: absolute;
 				z-index: -1;
-				border-radius: 8px;
 				background-color: #0e51a0;
+			}
+			.tab.rounded-left {
+				border-radius: 8px 0 0 8px;
+			}
+
+			.tab.rounded-right {
+				border-radius: 0 8px 8px 0;
 			}
 		}
 	}
@@ -182,7 +187,14 @@
 		display: flex;
 		flex-direction: column;
 		gap: 40px;
+		.form-container {
+			gap: 20px;
+			.form-buttons {
+				padding-top: 10px;
+			}
+		}
 		.form-title {
+			width: 100%;
 			font-size: 20px;
 			font-weight: 600;
 			color: #353535;
@@ -192,8 +204,19 @@
 			.input-wrap {
 				gap: 20px;
 				.input-item {
-					.tit {
+					.title {
 						width: 110px;
+						display: flex;
+						flex-direction: column;
+						align-items: flex-start;
+						justify-content: center;
+						small {
+							font-size: 12px;
+							letter-spacing: -0.75px;
+							color: #757575;
+						}
+					}
+					.tit {
 						color: #555;
 						display: flex;
 					}
@@ -234,7 +257,7 @@
 				height: 45px;
 			}
 		}
-		.cancle-btn {
+		.cancel-btn {
 			border: 1px solid #dddddd;
 			background-color: #fff;
 			color: #2c2c2c;
@@ -242,6 +265,12 @@
 		.sign-btn {
 			background-color: #003c7a;
 			color: #fff;
+			transition: all 0.3s;
+		}
+		.sign-btn:disabled {
+			background-color: #d9d9d9;
+			color: #ffffff;
+			box-shadow: none;
 		}
 	}
 }
@@ -309,7 +338,7 @@
 				align-items: center;
 				justify-content: center;
 			}
-			.cancle-btn {
+			.cancel-btn {
 				background-color: #ffffff;
 				border: 1px solid #d9d9d9;
 				color: #2c2c2c;
@@ -339,5 +368,126 @@
 	}
 	.form-buttons {
 		width: 100%;
+	}
+}
+.signModal,
+.editModal {
+	.modal-article {
+		width: 600px;
+		overflow: visible;
+		.sign-form {
+			width: 100%;
+			display: flex;
+			flex-direction: column;
+			gap: 40px;
+			.form-container {
+				gap: 20px;
+				.form-buttons {
+					padding-top: 10px;
+				}
+			}
+			.form-title {
+				width: 100%;
+				font-size: 20px;
+				font-weight: 600;
+				color: #353535;
+			}
+			.form-content {
+				width: 100%;
+				.input-wrap {
+					gap: 20px;
+					.input-item {
+						.tit {
+							width: 120px;
+							color: #555;
+							display: flex;
+							font-size: 15px;
+						}
+						.tit::before {
+							content: "*";
+							color: #fc5555;
+						}
+						.input {
+							.check-btn {
+								width: 110px !important;
+								height: 45px;
+								border-radius: 8px;
+								background-color: #edf3fa;
+								line-height: 1;
+								font-size: 14px;
+								font-weight: 500;
+								color: #003c7a;
+							}
+							.check-btn:disabled {
+								background-color: #bdbdbd;
+								color: #ffffff;
+							}
+						}
+					}
+				}
+			}
+			.buttons {
+				display: flex;
+				flex-direction: row;
+				justify-content: flex-end;
+				gap: 10px;
+				.custom-button {
+					display: flex;
+					flex-direction: row;
+					align-items: center;
+					justify-content: center;
+					font-size: 16px;
+					height: 45px;
+				}
+			}
+			.cancel-btn {
+				border: 1px solid #dddddd;
+				background-color: #fff;
+				width: 70px;
+				color: #2c2c2c;
+			}
+			.sign-btn {
+				transition: all 0.3s;
+				width: 140px;
+				background-color: #003c7a;
+				color: #fff;
+			}
+			.sign-btn:disabled {
+				background-color: #d9d9d9;
+				color: #ffffff;
+				box-shadow: none;
+			}
+			.save-btn {
+				transition: all 0.3s;
+				width: 140px;
+				background-color: #003c7a;
+				color: #fff;
+			}
+			.save-btn:disabled {
+				background-color: #d9d9d9;
+				color: #ffffff;
+				box-shadow: none;
+			}
+		}
+	}
+	.checkModal {
+		.modal-article {
+			width: 400px;
+		}
+		.modal-header {
+			display: block;
+		}
+	}
+}
+
+.editModal {
+	.input-item {
+		.reset-btn {
+			background-color: #edf3fa;
+			color: #003c7a;
+			font-size: 14px;
+			letter-spacing: -0.75px;
+			font-weight: 500;
+		}
 	}
 }

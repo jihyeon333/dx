@@ -17,7 +17,7 @@ const handleShowModal = ({ title, message, type, onConfirm = null }) => {
     modalConfirmAction.value = onConfirm;
     showModal.value = true;
 };
-// ✅ 모달 확인 버튼 클릭 시 실행
+//  모달 확인 버튼 클릭 시 실행
 const confirmModalAction = () => {
     if (modalConfirmAction.value) {
         modalConfirmAction.value(); // 로그인 페이지로 이동
@@ -25,7 +25,7 @@ const confirmModalAction = () => {
     closeModal();
 };
 
-// ✅ 모달 닫기
+//  모달 닫기
 const closeModal = () => {
     modalConfirmAction.value = null;
     showModal.value = false;
@@ -43,7 +43,7 @@ const closeModal = () => {
         </div>
     </div>
 
-    <!-- ✅ 모달 컴포넌트 -->
+    <!--  모달 컴포넌트 -->
     <Modal :show="showModal" :title="modalTitle" :message="modalMessage" :modalClass="modalClass"
         @confirm="confirmModalAction" @close="closeModal" class="confirmModal" />
 </template>

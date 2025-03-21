@@ -10,7 +10,7 @@ const props = defineProps({
 
 const emit = defineEmits(["change-page"]);
 
-// ✅ 페이지 목록 계산 (현재 페이지 기준 최대 5개 표시)
+// 페이지 목록 계산 (현재 페이지 기준 최대 5개 표시)
 const displayedPages = computed(() => {
   const range = [];
   let start = Math.max(1, props.currentPage - 2); // 현재 페이지 기준 앞 2개
@@ -22,7 +22,7 @@ const displayedPages = computed(() => {
   return range;
 });
 
-// ✅ 페이지 변경 함수
+// 페이지 변경 함수
 const changePage = (page) => {
   if (page >= 1 && page <= props.totalPages) {
     emit("change-page", page);
@@ -40,7 +40,7 @@ const changePage = (page) => {
         <span class="skip">이전</span>
       </a>
 
-      <!-- ✅ 수정: 숫자 보이도록 변경 -->
+      <!-- 수정: 숫자 보이도록 변경 -->
       <template v-for="page in displayedPages" :key="page">
         <a href="#" class="pag num" :class="{ current: page === currentPage }" @click.prevent="changePage(page)">
           <span> {{ page }}</span>

@@ -74,6 +74,7 @@ body {
 	align-content: center;
 	justify-content: center;
 	align-items: center;
+	padding-top: 80px;
 }
 .ipt,
 input,
@@ -220,6 +221,7 @@ input.focused {
 .dropdown-input .arrow.rotate {
 	transform: rotate(180deg);
 }
+
 .dropdown-menu {
 	width: 100%;
 	border: 1px solid #d9d9d9;
@@ -229,7 +231,7 @@ input.focused {
 	margin-top: -1px;
 	overflow: hidden;
 	left: 0;
-	z-index: 100;
+	z-index: 1;
 	box-shadow: 0 4px 10px 0 #dddddd20;
 }
 
@@ -270,6 +272,9 @@ input.focused {
 }
 .dropdown-menu .menu-list .list label:hover {
 	background-color: #f9f9fa;
+}
+.dropdown-input.placeholder > input {
+	color: #999;
 }
 button {
 	padding: 10px 15px;
@@ -379,6 +384,9 @@ hr {
 :hover {
 	outline: 0;
 	-webkit-tap-highlight-color: transparent;
+}
+.hidden {
+	display: none;
 }
 .bt {
 	padding: 10px;
@@ -522,13 +530,6 @@ hr {
 	color: #4e6b9e;
 }
 
-.table-container.fix {
-	max-height: 480px;
-	border-radius: 14px;
-	border: 1px solid #d9d9d9;
-	overflow: hidden;
-}
-
 .table-container.fix .table-body {
 	max-height: 430px;
 	overflow-y: auto;
@@ -559,7 +560,80 @@ hr {
 	letter-spacing: -0.75px;
 	color: #777777;
 }
+.table-header.sticky-header {
+	position: sticky;
+	top: 0;
+	z-index: 10;
+}
+.table-body.has-scroll {
+	max-height: 430px;
+	overflow-y: auto;
+}
+.table-body.has-scroll {
+	height: 430px;
+	overflow-y: visible;
+}
+.radio-checkbox-group {
+	width: 100%;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+.radio-checkbox-input {
+	width: 16px;
+	height: 16px;
+	border-radius: 50%;
+	position: relative;
+}
+.radio-checkbox-label {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 8px;
+}
+.radio-checkbox-custom {
+	display: flex;
+	width: 16px;
+	height: 16px;
+	border: 1px solid #d9d9d9;
+	background-color: #ffffff;
+	border-radius: 50%;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	transition: all 0.3s;
+}
+.radio-checkbox-input:checked ~ .radio-checkbox-custom {
+	background-color: #005cba;
+	border-color: #005cba;
+	position: relative;
+}
+.radio-checkbox-custom::after {
+	content: "";
+	position: absolute;
+}
+.radio-checkbox-input:checked ~ .radio-checkbox-custom::after {
+	display: block;
+	left: 50%;
+	top: 50%;
+	width: 8px;
+	height: 8px;
+	background-color: white;
+	transform: translate(-50%, -50%);
+	border-radius: 50%;
+}
 
+.radio-checkbox-label p {
+	font-size: 14px;
+	font-weight: 400;
+	letter-spacing: -0.75px;
+	color: #555;
+	transition: all 0.3s;
+}
+.radio-checkbox-input:checked ~ p {
+	color: #212121;
+	font-weight: 500;
+}
 /* 기본 스타일 */
 p {
 	margin: 0;
@@ -627,6 +701,24 @@ p {
 .btn-apply {
 	color: #757575;
 	transition: all 0.3s;
+}
+
+.action-button.btn-keyView {
+	font-size: 14px;
+	letter-spacing: -0.75px;
+	color: #2c2c2c;
+	padding: 3px 12px;
+	border-radius: 5px;
+	border: 1px solid #d9d9d9;
+	background-color: #ffffff;
+	text-decoration: none;
+	transition: all 0.3s;
+}
+
+.action-button.btn-keyView:hover {
+	color: #000000;
+	border: 1px solid #cccccc;
+	box-shadow: 3px 3px 5px #dddddd;
 }
 
 .btn-view:hover,
@@ -824,7 +916,7 @@ p {
 	height: 28px;
 	border-radius: 4px;
 	border: 1px solid #f1f2f6;
-	background-color: #ffffff;
+	background-color: #f1f2f6;
 	display: flex;
 	flex-direction: row;
 	align-items: center;
@@ -852,7 +944,7 @@ p {
 }
 .PagingView .paging .page .pag.prev:hover,
 .PagingView .paging .page .pag.next:hover {
-	background-color: #ffffff;
+	background-color: #f1f2f6;
 	border: 1px solid #f1f2f6;
 }
 .PagingView .paging .page .pag.prev:hover img,
@@ -866,4 +958,21 @@ p {
 .PagingView .paging .page .num.current span {
 	color: #fff;
 	font-weight: 600;
+}
+
+.fix-table .table-container + .PagingView {
+	border-top: 1px solid #88888860;
+}
+
+.date-range {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 10px;
+}
+.input-range-wrapper {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 10px;
 }

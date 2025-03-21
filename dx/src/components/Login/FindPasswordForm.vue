@@ -34,7 +34,7 @@ defineExpose({ resetForm });
 
 const handleCancel = () => {
   resetForm();
-  router.push({ name: "Login" }); // ✅ 네임드 라우트 사용
+  router.push({ name: "Login" }); //  네임드 라우트 사용
 };
 
 //아이디 입력 검증
@@ -122,7 +122,7 @@ const handleFindId = (event) => {
     <template #buttons>
       <div class="button-wrap">
         <div class="button">
-          <Button label="취소" type="button" @click="handleCancel" class="cancle-btn" />
+          <Button label="취소" type="button" @click="handleCancel" class="cancel-btn" />
         </div>
         <div class="button">
           <Button label="찾기" type="button" :disabled="disableRegister" @click="handleFindId" class="find-btn" />
