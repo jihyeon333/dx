@@ -177,6 +177,94 @@ main {
 				}
 			}
 		}
+		.card {
+			padding: 30px !important;
+			background-color: #ffffff;
+			border-radius: 14px;
+			display: flex;
+			flex-direction: column;
+			align-items: stretch;
+			justify-content: center;
+			gap: 15px;
+			border: none;
+			margin-bottom: 30px;
+			.card-content {
+				padding: 0;
+				display: flex;
+				flex-direction: column;
+				gap: 30px;
+			}
+			.add-form,
+			.edit-form {
+				border: none;
+				width: 510px;
+				margin: 0;
+				.form-container {
+					.form-content {
+						padding: 0;
+					}
+				}
+			}
+			.add-item {
+				padding-top: 30px;
+				width: 100%;
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+				justify-content: space-between;
+				gap: 15px;
+				border-top: 1px solid #d9d9d9;
+				.tit {
+					min-width: 100px;
+					font-size: 16px;
+					font-weight: 500;
+					letter-spacing: -0.75px;
+					color: #555;
+				}
+				.flex-right {
+					display: flex;
+					flex-direction: row;
+					justify-content: flex-end;
+					.buttons {
+						width: auto;
+						gap: 10px;
+						button {
+							width: 85px;
+							height: 40px;
+							border-radius: 6px;
+							background-color: #fff;
+							border: 1px solid #d9d9d9;
+							font-size: 14px;
+							letter-spacing: -0.5px;
+							font-weight: 500;
+						}
+						.btn-success {
+							color: #5a5a5a;
+						}
+						.btn-delete {
+							color: #fc5555;
+						}
+					}
+				}
+			}
+			.fix-table {
+				margin-bottom: 0;
+				.table-body {
+					min-height: 250px;
+					max-height: 250px;
+				}
+			}
+			.PagingView .view .dropdown-container {
+				width: 90px;
+			}
+			.button-group {
+				max-width: 100%;
+				display: flex;
+				flex-direction: row;
+				justify-content: space-between;
+				align-items: center;
+			}
+		}
 		.search-bar-wrapper {
 			display: flex;
 			flex-direction: row;

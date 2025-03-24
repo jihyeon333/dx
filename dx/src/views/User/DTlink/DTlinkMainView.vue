@@ -105,20 +105,20 @@ const columns = ref([
   { key: "processName", label: "공정명", width: "17%", align: "text-center" },
   { key: "endpoint", label: "연계 ID", width: "17%", align: "text-center" },
   { key: "type", label: "AI 종류", width: "17%", align: "text-center" },
+  {
+    key: "parameter",
+    label: "파라미터",
+    width: "15%",
+    align: "text-center",
+    type: "button",
+    buttonLabel: "보기",
+    className: "btn-view",
+    onClick: (row) => {
+      router.push({ name: "dtLinkParams", query: { id: row.id } });
+    }
+  },
 ]);
 
-const extraColumn = ref({
-  key: "parameter",
-  label: "파라미터",
-  width: "200px",
-  getActions: (row) => {
-    return [{
-      label: "보기",
-      className: "btn-view",
-      handler: () => router.push({ name: "dtLinkParams", query: { id: row.id } })
-    }];
-  }
-});
 
 const goToEditPage = (row) => {
   router.push({ name: "dtLinkEdit", query: { id: row.id } });
@@ -179,8 +179,8 @@ const deleteRows = () => {
         </div>
       </div>
       <div class="fix-table">
-        <DataTable ref="dataTableRef" :columns="columns" :data="fields" :extraColumn="extraColumn" :selectable="true"
-          class="fix fixed" :clickable="true" @cell-click="goToEditPage" />
+        <DataTable ref="dataTableRef" :columns="columns" :data="fields" :selectable="true" class="fix fixed"
+          :clickable="true" @cell-click="goToEditPage" />
         <PaginationsView :totalItems="totalItems" ref="paginationRef" />
       </div>
     </div>

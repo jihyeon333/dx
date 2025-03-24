@@ -1,5 +1,5 @@
 <script setup>
-import { defineProps, defineEmits, computed } from 'vue';
+import { defineProps, defineEmits, computed, watch, onUnmounted } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
@@ -16,7 +16,8 @@ const props = defineProps({
     showCloseButton: { type: Boolean, default: false },
     align: { type: String, default: 'center' },
     showCancel: { type: Boolean, default: true },
-    showButtons: { type: Boolean, default: true }
+    showButtons: { type: Boolean, default: true },
+    showConfirm: { type: Boolean, default: true },
 });
 
 const emits = defineEmits(['confirm', 'cancel', 'close']);
@@ -41,6 +42,24 @@ const contentClass = computed(() => ({
     'text-center': props.align === 'center',
     'text-right': props.align === 'right',
 }));
+
+// 모달 표시 상태 감시
+watch(
+    () => props.show,
+    (val) => {
+        if (val) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+    }
+);
+
+// 컴포넌트 언마운트 시에도 원복
+onUnmounted(() => {
+    document.body.style.overflow = '';
+});
+
 </script>
 
 <template>
@@ -65,7 +84,9 @@ const contentClass = computed(() => ({
                     <button v-if="showCancel" class="modal-button cancel" @click="cancelAction">
                         {{ cancelText }}
                     </button>
-                    <button class="modal-button" @click="confirmAction">{{ confirmText }}</button>
+                    <button v-if="showConfirm" class="modal-button" @click="confirmAction">
+                        {{ confirmText }}
+                    </button>
                 </slot>
             </div>
         </div>

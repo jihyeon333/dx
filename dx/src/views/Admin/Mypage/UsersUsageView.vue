@@ -7,7 +7,6 @@ import DateRangePicker from '@/components/common/DateRangePicker.vue';
 import Button from "@/components/common/Button.vue";
 import ChartView from '@/components/common/ChartView.vue';
 import DataTable from "@/components/common/DataTable.vue";
-import Pagination from "@/components/common/Pagination.vue";
 import PaginationsView from "@/components/common/PaginationsView.vue";
 
 // 탭 & 필터

@@ -6,6 +6,7 @@ import CardBox from "@/components/common/CardBox.vue";
 import Input from "@/components/common/Input.vue";
 import Form from "@/components/common/Form.vue";
 import DropdownMenu from "@/components/common/DropdownMenu.vue";
+import customArrowIcon from "@/assets/image/icon/chevron-down.svg";
 import Button from "@/components/common/Button.vue";
 import Modal from "@/components/common/Modal.vue";
 import axios from "axios";
@@ -223,7 +224,8 @@ const goBack = () => {
         <div class="button-group right">
           <div class="buttons right-buttons">
             <Button label="취소" type="primary" class="cancel-btn" @click="handleCancelClick" />
-            <Button label="완료" type="primary" @click="handleRegisterClick" class="add-btn" :disabled="isRegisterButtonDisabled" />
+            <Button label="완료" type="primary" @click="handleRegisterClick" class="add-btn"
+              :disabled="isRegisterButtonDisabled" />
           </div>
         </div>
       </CardBox>

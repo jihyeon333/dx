@@ -6,6 +6,7 @@ import CardBox from "@/components/common/CardBox.vue";
 import Input from "@/components/common/Input.vue";
 import Form from "@/components/common/Form.vue";
 import DropdownMenu from "@/components/common/DropdownMenu.vue";
+import customArrowIcon from '@/assets/image/icon/chevron-down.svg';
 import Button from "@/components/common/Button.vue";
 import Alert from "@/components/common/Alert.vue";
 import Modal from "@/components/common/Modal.vue";
@@ -184,13 +185,13 @@ const goBack = () => {
             <div class="input-item">
               <p class="tit">공정종류</p>
               <DropdownMenu v-model="fields.processType" :options="processTypes.map(opt => opt.name)" type="radio"
-                placeholder="공정종류 선택" />
+                placeholder="공정종류 선택" :arrowIcon="customArrowIcon" />
             </div>
 
             <div class="input-item">
               <p class="tit">공정명</p>
               <DropdownMenu v-model="fields.processName" :options="processNames.map(opt => opt.name)" type="radio"
-                placeholder="공정명 선택" />
+                placeholder="공정명 선택" :arrowIcon="customArrowIcon" />
             </div>
 
             <div class="input-item">

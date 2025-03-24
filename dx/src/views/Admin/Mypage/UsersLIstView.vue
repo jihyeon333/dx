@@ -15,6 +15,7 @@ import SignUpForm from "@/components/Login/SignUpForm.vue";
 import EditUserForm from "@/components/Login/EditUserForm.vue";
 
 const router = useRouter();
+const totalItems = ref(50);
 const tableRef = ref(null);
 const isSignupModalOpen = ref(false);
 const isEditModalOpen = ref(false);
@@ -27,7 +28,7 @@ const modalType = ref('');
 const modalConfirmAction = ref(null);
 
 // 검색 및 필터 상태
-const selectedFilter = ref("선택");
+const selectedFilter = ref("");
 const searchQuery = ref("");
 
 const filterOptions = ref([
@@ -38,10 +39,12 @@ const filterOptions = ref([
   { label: "옵션4", value: "type4" },
 ]);
 
-const handleFilterChange = (newLabel) => {
-  const found = filterOptions.value.find(opt => opt.label === newLabel);
-  if (found) selectedFilter.value = found.label;
+
+
+const handleFilterChange = (newValue) => {
+  selectedFilter.value = newValue;
 };
+
 
 const updateFilter = () => {
   console.log(`"${selectedFilter.value}" 기준으로 "${searchQuery.value}" 검색 실행`);
@@ -56,21 +59,20 @@ const columns = ref([
   { key: "email", label: "이메일", width: "12%", align: "text-center" },
   { key: "type", label: "회원형태", width: "12%", align: "text-center" },
   { key: "company", label: "회사명", width: "12%", align: "text-center" },
+  {
+    key: "action",
+    label: "키",
+    width: "12%",
+    align: "text-center",
+    type: "button",
+    buttonLabel: "보기",
+    className: "btn-keyView",
+    onClick: (row) => viewkey(row),
+  },
 ]);
 
 const rowModals = ref({});
-const extraColumn = ref({
-  key: "action",
-  label: "키",
-  width: "200px",
-  actions: [
-    {
-      label: "보기",
-      className: "btn-keyView",
-      handler: (row) => viewkey(row),
-    },
-  ],
-});
+
 
 // 더미 데이터 (회원 목록)
 const data = ref([
@@ -171,8 +173,8 @@ const openDeleteConfirmModal = () => {
           <Button class="btn-delete" @click="openDeleteConfirmModal" label="삭제" />
         </div>
         <div class="SearchFilter">
-          <DropdownMenu v-model="selectedFilter" :options="filterOptions.map(opt => opt.label)" placeholder="필터를 선택하세요"
-            type="radio" :arrowIcon="customArrowIcon" @update:modelValue="handleFilterChange" />
+          <DropdownMenu v-model="selectedFilter" :options="filterOptions" option-label="label" option-value="value"
+            placeholder="선택" type="radio" :arrowIcon="customArrowIcon" />
           <div class="Search">
             <Input v-model="searchQuery" placeholder="검색어를 입력해주세요." class="search-input" />
             <Button :icon="faSearch" @click="updateFilter" class="search-btn" />
@@ -181,9 +183,9 @@ const openDeleteConfirmModal = () => {
       </div>
       <!-- 테이블 -->
       <div class="fix-table">
-        <DataTable ref="tableRef" :columns="columns" :data="data" :extraColumn="extraColumn" :selectable="true"
-          class="useList fix fixed" :clickable="true" @cell-click="handleCellClick" />
-        <PaginationsView />
+        <DataTable ref="tableRef" :columns="columns" :data="data" :selectable="true" class="useList fix fixed"
+          :clickable="true" @cell-click="handleCellClick" />
+        <PaginationsView :totalItems="totalItems" ref="paginationRef" />
       </div>
     </div>
 

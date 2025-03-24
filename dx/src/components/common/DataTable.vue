@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, watch } from "vue";
 import { useRouter } from "vue-router";
-import DropdownMenu from "@/components/common/DropdownMenu.vue"; // 드롭다운 컴포넌트 임포트
+import DropdownMenu from "@/components/common/DropdownMenu.vue";
 
 const props = defineProps({
   columns: Array,
@@ -12,72 +12,83 @@ const props = defineProps({
   extraColumn: {
     type: Object,
     default: () => ({
-      getActions: () => [], // 기본적으로 빈 배열 반환하여 안전성 확보
+      getActions: () => [],
     }),
   },
   orderColumn: Object,
   selectable: Boolean,
+  selected: {
+    type: Array,
+    default: () => [],
+  },
 });
 
-const emit = defineEmits(["update:data"]);
+const emit = defineEmits(["update:data", "update:selected"]);
 const selectedRows = ref([]);
 const allCheckRef = ref(null);
 const router = useRouter();
-const isEditingRow = ref(null); // 수정 모드 상태 추가
+const isEditingRow = ref(null);
 
-// 데이터가 없는지 확인
 const isEmpty = computed(() => props.data.length === 0);
 
-// 전체 선택 여부
 const allSelected = computed(() => {
   return props.data.length > 0 && selectedRows.value.length === props.data.length;
 });
 
-// 일부만 선택되었을 때 'indeterminate' 상태를 만들기 위한 계산
 const isIndeterminate = computed(() => {
   return selectedRows.value.length > 0 && selectedRows.value.length < props.data.length;
 });
 
-// 'indeterminate' 상태를 체크박스에 반영
-watch([selectedRows, () => props.data], () => {
-  if (allCheckRef.value) {
-    allCheckRef.value.indeterminate = isIndeterminate.value;
-  }
-});
+watch(() => props.selected, (val) => {
+  selectedRows.value = [...val];
+}, { immediate: true });
 
-// 개별 체크박스 선택 핸들러
-const toggleSelection = (row) => {
-  if (selectedRows.value.includes(row)) {
-    selectedRows.value = selectedRows.value.filter((r) => r !== row);
+
+const toggleSelection = (rowId) => {
+  if (selectedRows.value.includes(rowId)) {
+    selectedRows.value = selectedRows.value.filter((id) => id !== rowId);
   } else {
-    selectedRows.value.push(row);
+    selectedRows.value.push(rowId);
   }
-  emit("update:selectedRows", selectedRows.value);
+  emit("update:selected", selectedRows.value);
 };
 
-// 전체 선택 / 해제 핸들러
+
 const toggleAll = () => {
   if (allSelected.value) {
     selectedRows.value = [];
   } else {
-    selectedRows.value = props.data.map((row) => row.id); // ID를 기준으로 선택
+    selectedRows.value = props.data.map((row) => row.id);
   }
+  emit("update:selected", selectedRows.value);
 };
 
-// 페이지 이동 함수 (필요한 경우 개별적으로 사용)
 const goToDetailPage = (row, columnKey) => {
-  console.log(`Navigating to detail page with ID: ${row.id}, Column: ${columnKey}`);
-
   router.push({
     name: "SolutionEdit",
     query: { id: row.id, column: columnKey },
   });
 };
 
-// 데이터 값 업데이트 핸들러 (페이지 이동 제거됨)
 const updateDataValue = (row, newValue) => {
-  emit("update:data", row.id, newValue); // 부모 컴포넌트에서 데이터 업데이트 처리
+  emit("update:data", row.id, newValue);
   isEditingRow.value = null;
+};
+
+const getStatusClass = (status) => {
+  switch (status) {
+    case "진행중":
+      return "status-active";
+    case "중지":
+      return "status-paused";
+    default:
+      return "status-default";
+  }
+};
+
+const toggleStatus = (row) => {
+  const newStatus = row.status === "진행중" ? "중지" : "진행중";
+  emit("update:data", row.id, { status: newStatus });
 };
 
 defineExpose({
@@ -104,9 +115,7 @@ defineExpose({
                 <label for="allcheck" class="checkmark"></label>
               </div>
             </th>
-            <th v-for="col in columns" :key="col.key">
-              {{ col.label }}
-            </th>
+            <th v-for="col in columns" :key="col.key">{{ col.label }}</th>
             <th v-if="extraColumn">{{ extraColumn.label }}</th>
             <th v-if="orderColumn">{{ orderColumn.label }}</th>
           </tr>
@@ -130,15 +139,44 @@ defineExpose({
                 <label :for="'check-' + row.id" class="checkmark"></label>
               </div>
             </td>
+
             <td v-for="col in columns" :key="col.key">
-              <!-- dataValue 칼럼에 드롭다운 추가 -->
-              <template v-if="col.key === 'dataValue'">
+              <!-- type: badge -->
+              <template v-if="col.type === 'badge'">
+                <span :class="['status-badge', getStatusClass(row[col.key])]">
+                  {{ row[col.key] }}
+                </span>
+              </template>
+
+              <!-- type: toggle-button -->
+              <template v-else-if="col.type === 'toggle-button'">
+                <button :class="[
+                  'state-btn',
+                  row.status === '진행중' ? 'btn-stop' : 'btn-start'
+                ]" @click.stop="toggleStatus(row)">
+                  {{ row.status === '진행중' ? '중지' : '시작' }}
+                </button>
+
+              </template>
+
+              <!-- type: dropdown -->
+              <template v-else-if="col.type === 'dropdown'">
                 <p :class="col.align || ''" @click="isEditingRow = row">
                   {{ row[col.key] }}
                 </p>
                 <DropdownMenu v-if="isEditingRow === row" v-model="row[col.key]" :options="['JSON', 'TEXT']"
-                  @update:modelValue="(newValue) => updateDataValue(row, newValue)" />
+                  @update:modelValue="(val) => updateDataValue(row, val)" />
               </template>
+
+              <!-- 기본 버튼  -->
+              <template v-else-if="col.type === 'button'">
+                <button :class="['table-btn', col.className]" @click.stop="col.onClick?.(row)">
+                  {{ col.buttonLabel || '버튼' }}
+                </button>
+              </template>
+
+
+              <!-- 기본 렌더링 -->
               <template v-else>
                 <p :class="[{ link: col.clickable }, col.align || '']"
                   @click="col.clickable ? $emit('cell-click', row) : null">
@@ -146,6 +184,8 @@ defineExpose({
                 </p>
               </template>
             </td>
+
+            <!-- Extra 버튼 컬럼 -->
             <td v-if="extraColumn">
               <div class="button-list">
                 <button
@@ -155,11 +195,14 @@ defineExpose({
                 </button>
               </div>
             </td>
+
+            <!-- Order 버튼 컬럼 -->
             <td v-if="orderColumn">
               <div class="button-list">
                 <button v-for="action in orderColumn.actions" :key="action.label" @click="() => action.handler(row)"
-                  :class="['action-button', action.className]">
-                  <img :src="action.imgSrc" alt="action.label" />
+                  :class="['action-button', action.className]"
+                  :disabled="(action.label === '위로' && data[0]?.id === row.id) || (action.label === '아래로' && data[data.length - 1]?.id === row.id)">
+                  <img :src="action.imgSrc" :alt="action.label" />
                 </button>
               </div>
             </td>

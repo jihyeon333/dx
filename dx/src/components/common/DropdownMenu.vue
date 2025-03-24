@@ -7,10 +7,10 @@ const props = defineProps({
     type: Array,
     required: true
   },
-  modelValue: [Array, String], // `modelValue`가 배열 또는 문자열일 수 있음
+  modelValue: [Array, String, Number], // `modelValue`가 배열 또는 문자열일 수 있음
   placeholder: {
     type: String,
-    default: "선택해주세요."
+    default: "선택"
   },
   errorMessage: String,
   type: {
@@ -23,7 +23,24 @@ const props = defineProps({
     default: arrow
   },
   isDisabled: Boolean,
+
+  optionLabel: {
+    type: String,
+    default: "label" // 기본 label 키 (또는 name)
+  },
+  optionValue: {
+    type: String,
+    default: "value"
+  },
+  mode: {
+    type: String,
+    default: "default", // default | pagination
+    validator: (val) => ["default", "pagination"].includes(val)
+  }
+
 });
+
+
 
 const emits = defineEmits(["update:modelValue", "validateField"]);
 
@@ -34,10 +51,30 @@ const dropdownPosition = ref("bottom");
 
 // 선택된 텍스트 표시 (플레이스홀더 포함)
 const selectedText = computed(() => {
-  if (!props.modelValue || (Array.isArray(props.modelValue) && props.modelValue.length === 0)) {
-    return props.placeholder;
+  const isEmpty =
+    props.modelValue === null ||
+    props.modelValue === undefined ||
+    (Array.isArray(props.modelValue) && props.modelValue.length === 0);
+
+  // pagination 모드는 값만 바로 출력
+  if (props.mode === 'pagination') {
+    return isEmpty ? props.placeholder : String(props.modelValue);
   }
-  return Array.isArray(props.modelValue) ? props.modelValue.join(", ") : props.modelValue.toString();
+
+  if (isEmpty) return props.placeholder;
+
+  const extractLabel = (val) => {
+    const found = props.options.find((opt) =>
+      typeof opt === "object"
+        ? String(opt[props.optionValue]) === String(val)
+        : String(opt) === String(val)
+    );
+    return typeof found === "object" ? found[props.optionLabel] : found ?? props.placeholder;
+  };
+
+  return Array.isArray(props.modelValue)
+    ? props.modelValue.map(extractLabel).join(", ")
+    : extractLabel(props.modelValue);
 });
 
 // 플레이스홀더 여부 확인
@@ -72,9 +109,10 @@ const selectOption = (option) => {
   if (props.isDisabled) return;
 
   if (props.type === "radio") {
-    if (props.modelValue !== option) {
-      emits("update:modelValue", option);
-      emits("validateField", option);
+    const selected = typeof option === 'object' ? option[props.optionValue] : option;
+    if (props.modelValue !== selected) {
+      emits("update:modelValue", selected);
+      emits("validateField", selected);
     }
     showDropdown.value = false;
   } else {
@@ -125,13 +163,14 @@ onUnmounted(() => {
 
     <div v-show="showDropdown && !isDisabled" class="dropdown-menu" :class="[dropdownPosition]" ref="dropdownMenuRef">
       <ul class="menu-list">
-        <li v-for="option in options" :key="option" class="list">
+        <li v-for="option in options" :key="typeof option === 'object' ? option[optionValue] : option" class="list">
           <label>
             <div class="item">
-              <input :type="type" :value="option" :disabled="isDisabled"
-                :checked="type === 'radio' ? modelValue === option : (Array.isArray(modelValue) && modelValue.includes(option))"
-                @change="selectOption(option)" />
-              {{ option }}
+              <input :type="type" :value="typeof option === 'object' ? option[optionValue] : option" :checked="type === 'radio'
+                ? modelValue === (typeof option === 'object' ? option[optionValue] : option)
+                : (Array.isArray(modelValue) && modelValue.includes(typeof option === 'object' ? option[optionValue] : option))
+                " @change="selectOption(typeof option === 'object' ? option[optionValue] : option)" />
+              {{ typeof option === 'object' ? option[optionLabel] : option }}
             </div>
           </label>
         </li>

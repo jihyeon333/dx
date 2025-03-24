@@ -14,6 +14,18 @@ const device = () => import("@/views/User/Device/DeviceView.vue");
 const dtLink = () => import("@/views/User/DTlink/DTlinkView.vue");
 const solution = () => import("@/views/User/Solution/SolutionView.vue");
 
+// 공정관리 내부 페이지
+const processMain = () => import("@/views/User/Process/ProcessMainView.vue");
+const processAdd = () => import("@/views/User/Process/ProcessAddView.vue");
+const processEdit = () => import("@/views/User/Process/ProcessEditView.vue");
+
+// 데이터관리 내부페이지
+
+// 장비관리내부페이지
+const deviceMain = () => import("@/views/User/Device/DeviceMainView.vue");
+const deviceAdd = () => import("@/views/User/Device/DeviceAddView.vue");
+const deviceEdit = () => import("@/views/User/Device/DeviceEditView.vue");
+
 //  솔루션 내부 페이지 Lazy Loading 적용
 const solutionMain = () => import("@/views/User/Solution/SolutionMainView.vue");
 const solutionAdd = () => import("@/views/User/Solution/SolutionAddView.vue");
@@ -34,6 +46,8 @@ const adminMypage = () => import("@/views/Admin/Mypage/AdminMypageView.vue");
 const usersList = () => import("@/views/Admin/Mypage/UsersLIstView.vue");
 const usersApproval = () => import("@/views/Admin/Mypage/UsersApprovalView.vue");
 const usersUsage = () => import("@/views/Admin/Mypage/UsersUsageView.vue");
+
+// 사용자마이페이지
 
 const NotFound = () => import("@/views/Error/ForbiddenView.vue");
 
@@ -62,17 +76,23 @@ const routes = [
 		component: UserLayout,
 		meta: [{ requiresAuth: true }],
 		children: [
-			{ path: "process", name: "Process", component: process },
-			{ path: "data", name: "Data", component: data },
-			{ path: "device", name: "Device", component: device },
 			{
-				path: "dtLink",
-				component: dtLink, // DT연계관리
+				path: "process",
+				component: process, // 공정관리 메인 레이아웃
 				children: [
-					{ path: "", name: "dtLinkMain", component: dtLinkMain }, // 기본 페이지
-					{ path: "add", name: "dtLinkAdd", component: dtLinkAdd },
-					{ path: "edit", name: "dtLinkEdit", component: dtLinkEdit, props: true },
-					{ path: "params", name: "dtLinkParams", component: dtLinkParams },
+					{ path: "", name: "ProcessMain", component: processMain }, // 기본 페이지
+					{ path: "add", name: "ProcessAdd", component: processAdd },
+					{ path: "edit", name: "ProcessEdit", component: processEdit, props: true },
+				],
+			},
+			{ path: "data", name: "Data", component: data },
+			{
+				path: "device",
+				component: device, // 장비관리 메인 레이아웃
+				children: [
+					{ path: "", name: "deviceMain", component: deviceMain }, // 기본 페이지
+					{ path: "add", name: "deviceAdd", component: deviceAdd },
+					{ path: "edit", name: "deviceEdit", component: deviceEdit, props: true },
 				],
 			},
 			{
@@ -85,6 +105,17 @@ const routes = [
 					{ path: "params", name: "SolutionParams", component: solutionParams },
 				],
 			},
+			{
+				path: "dtLink",
+				component: dtLink, // DT연계관리
+				children: [
+					{ path: "", name: "dtLinkMain", component: dtLinkMain }, // 기본 페이지
+					{ path: "add", name: "dtLinkAdd", component: dtLinkAdd },
+					{ path: "edit", name: "dtLinkEdit", component: dtLinkEdit, props: true },
+					{ path: "params", name: "dtLinkParams", component: dtLinkParams },
+				],
+			},
+
 			// 일반 사용자 마이페이지 추가
 			{ path: "mypage", name: "UserMypage", component: userMypage, meta: { requiresAuth: true } },
 		],

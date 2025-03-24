@@ -9,7 +9,7 @@ const props = defineProps({
 });
 
 const perPageOptions = ref([10, 20, 30, 50]);
-const selectedPerPage = ref(perPageOptions.value[0]);
+const selectedPerPage = ref(10);
 const currentPage = ref(1); // 항상 첫 번째 페이지가 활성화되도록 초기값 설정
 
 // totalPages가 최소 1이 되도록 보장
@@ -40,8 +40,7 @@ defineExpose({
   <div class="PagingView">
     <div class="view">
       <p>보기</p>
-      <DropdownMenu v-model="selectedPerPage" :options="perPageOptions.map(option => option.toString())"
-        placeholder="항목 수" :arrowIcon="customArrowIcon" />
+      <DropdownMenu v-model="selectedPerPage" :options="[10, 20, 30, 40, 50]" mode="pagination" />
       <p>of {{ props.totalItems }}</p>
     </div>
     <Paging :total-pages="totalPages" :current-page="currentPage" @change-page="changePage" />

@@ -6,6 +6,7 @@ import CardBox from "@/components/common/CardBox.vue";
 import Input from "@/components/common/Input.vue";
 import Form from "@/components/common/Form.vue";
 import DropdownMenu from "@/components/common/DropdownMenu.vue";
+import customArrowIcon from '@/assets/image/icon/chevron-down.svg';
 import Button from "@/components/common/Button.vue";
 import Modal from "@/components/common/Modal.vue";
 import axios from "axios";
