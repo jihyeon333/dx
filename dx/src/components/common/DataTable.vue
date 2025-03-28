@@ -1,6 +1,5 @@
 <script setup>
 import { ref, computed, watch } from "vue";
-import { useRouter } from "vue-router";
 import DropdownMenu from "@/components/common/DropdownMenu.vue";
 
 const props = defineProps({
@@ -26,18 +25,22 @@ const props = defineProps({
 const emit = defineEmits(["update:data", "update:selected"]);
 const selectedRows = ref([]);
 const allCheckRef = ref(null);
-const router = useRouter();
 const isEditingRow = ref(null);
 
-const isEmpty = computed(() => props.data.length === 0);
+const colGroupDefs = computed(() => {
+  const cols = [];
+
+  if (props.selectable) cols.push({ width: "50px" });
+  props.columns.forEach(col => cols.push({ width: col.width || 'auto' }));
+  if (props.orderColumn) cols.push({ width: props.orderColumn.width || 'auto' });
+
+  return cols;
+});
 
 const allSelected = computed(() => {
   return props.data.length > 0 && selectedRows.value.length === props.data.length;
 });
 
-const isIndeterminate = computed(() => {
-  return selectedRows.value.length > 0 && selectedRows.value.length < props.data.length;
-});
 
 watch(() => props.selected, (val) => {
   selectedRows.value = [...val];
@@ -63,12 +66,6 @@ const toggleAll = () => {
   emit("update:selected", selectedRows.value);
 };
 
-const goToDetailPage = (row, columnKey) => {
-  router.push({
-    name: "SolutionEdit",
-    query: { id: row.id, column: columnKey },
-  });
-};
 
 const updateDataValue = (row, newValue) => {
   emit("update:data", row.id, newValue);
@@ -86,10 +83,21 @@ const getStatusClass = (status) => {
   }
 };
 
-const toggleStatus = (row) => {
-  const newStatus = row.status === "진행중" ? "중지" : "진행중";
-  emit("update:data", row.id, { status: newStatus });
+const toggleStatus = (row, key) => {
+  const newStatus = row[key] === "진행중" ? "중지" : "진행중";
+  emit("update:data", row.id, { [key]: newStatus });
 };
+
+const getExtraActions = (row) => {
+  return props.extraColumn?.actions || props.extraColumn?.getActions?.(row) || [];
+};
+
+const hasExtraActions = (row) => {
+  return getExtraActions(row).length > 0;
+};
+
+
+
 
 defineExpose({
   selectedRows,
@@ -101,22 +109,21 @@ defineExpose({
     <div class="table-header">
       <table class="table-col">
         <colgroup>
-          <col v-if="selectable" style="width: 50px;" />
-          <col v-for="col in columns" :key="col.key" :style="{ width: col.width || 'auto' }" />
-          <col v-if="extraColumn" :style="{ width: extraColumn.width || 'auto' }" />
-          <col v-if="orderColumn" :style="{ width: orderColumn.width || 'auto' }" />
+          <col v-for="(col, idx) in colGroupDefs" :key="idx" :style="{ width: col.width }" />
         </colgroup>
-        <thead>
+        <thead v-if="columns.length > 0">
           <tr>
             <th v-if="selectable">
               <div class="checkbox-container">
                 <input id="allcheck" type="checkbox" class="checknum" ref="allCheckRef" @change="toggleAll"
-                  :checked="allSelected" :indeterminate="isIndeterminate" />
+                  :checked="allSelected" />
                 <label for="allcheck" class="checkmark"></label>
               </div>
             </th>
             <th v-for="col in columns" :key="col.key">{{ col.label }}</th>
-            <th v-if="extraColumn">{{ extraColumn.label }}</th>
+            <th v-if="data.some(row => getExtraActions(row).length > 0)">
+              {{ extraColumn.label }}
+            </th>
             <th v-if="orderColumn">{{ orderColumn.label }}</th>
           </tr>
         </thead>
@@ -125,12 +132,9 @@ defineExpose({
     <div class="table-body">
       <table class="table-col">
         <colgroup>
-          <col v-if="selectable" style="width: 50px;" />
-          <col v-for="col in columns" :key="col.key" :style="{ width: col.width || 'auto' }" />
-          <col v-if="extraColumn" :style="{ width: extraColumn.width || 'auto' }" />
-          <col v-if="orderColumn" :style="{ width: orderColumn.width || 'auto' }" />
+          <col v-for="(col, idx) in colGroupDefs" :key="idx" :style="{ width: col.width }" />
         </colgroup>
-        <tbody>
+        <tbody v-if="columns.length > 0 && data.length > 0">
           <tr v-for="row in data" :key="row.id">
             <td v-if="selectable">
               <div class="checkbox-container">
@@ -150,14 +154,12 @@ defineExpose({
 
               <!-- type: toggle-button -->
               <template v-else-if="col.type === 'toggle-button'">
-                <button :class="[
-                  'state-btn',
-                  row.status === '진행중' ? 'btn-stop' : 'btn-start'
-                ]" @click.stop="toggleStatus(row)">
+                <button :class="['state-btn', row.status === '진행중' ? 'btn-stop' : 'btn-start']"
+                  @click.stop="toggleStatus(row, 'status')">
                   {{ row.status === '진행중' ? '중지' : '시작' }}
                 </button>
-
               </template>
+
 
               <!-- type: dropdown -->
               <template v-else-if="col.type === 'dropdown'">
@@ -179,18 +181,17 @@ defineExpose({
               <!-- 기본 렌더링 -->
               <template v-else>
                 <p :class="[{ link: col.clickable }, col.align || '']"
-                  @click="col.clickable ? $emit('cell-click', row) : null">
+                  @click="col.clickable ? $emit('cell-click', row, col) : null">
                   {{ row[col.key] || "" }}
                 </p>
               </template>
             </td>
 
             <!-- Extra 버튼 컬럼 -->
-            <td v-if="extraColumn">
+            <td v-if="hasExtraActions(row)">
               <div class="button-list">
-                <button
-                  v-for="action in (extraColumn.actions || (extraColumn.getActions ? extraColumn.getActions(row) : []))"
-                  :key="action.label" @click="() => action.handler(row)" :class="['action-button', action.className]">
+                <button v-for="action in getExtraActions(row)" :key="action.label" @click="() => action.handler(row)"
+                  :class="['action-button', action.className]">
                   {{ action.label }}
                 </button>
               </div>

@@ -2,10 +2,13 @@
 import { ref, computed, watch, defineExpose, defineProps } from 'vue';
 import DropdownMenu from '@/components/common/DropdownMenu.vue';
 import Paging from "@/components/common/PagingView.vue";
-import customArrowIcon from '@/assets/image/icon/chevron-down.svg';
 
 const props = defineProps({
-  totalItems: Number
+  totalItems: Number,
+  showView: {
+    type: Boolean,
+    default: true, // 기본값 true (기존처럼 표시)
+  }
 });
 
 const perPageOptions = ref([10, 20, 30, 50]);
@@ -38,9 +41,9 @@ defineExpose({
 
 <template>
   <div class="PagingView">
-    <div class="view">
+    <div class="view" v-if="props.showView">
       <p>보기</p>
-      <DropdownMenu v-model="selectedPerPage" :options="[10, 20, 30, 40, 50]" mode="pagination" />
+      <DropdownMenu v-model="selectedPerPage" :options="perPageOptions" mode="pagination" />
       <p>of {{ props.totalItems }}</p>
     </div>
     <Paging :total-pages="totalPages" :current-page="currentPage" @change-page="changePage" />

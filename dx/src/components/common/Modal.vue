@@ -22,8 +22,10 @@ const props = defineProps({
 
 const emits = defineEmits(['confirm', 'cancel', 'close']);
 
+
+
 const closeModal = () => {
-    emits('close');
+    emits('update:show', false);
 };
 
 const confirmAction = () => {

@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, onMounted, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRouter } from "vue-router";
 import Title from "@/components/common/Title.vue";
 import CardBox from "@/components/common/CardBox.vue";
 import Input from "@/components/common/Input.vue";
@@ -9,41 +9,33 @@ import DropdownMenu from "@/components/common/DropdownMenu.vue";
 import customArrowIcon from '@/assets/image/icon/chevron-down.svg';
 import Button from "@/components/common/Button.vue";
 import Modal from "@/components/common/Modal.vue";
-import axios from "axios";
-import { AI_TYPES } from '@/constants';
+import dtApi from "@/api/dtApi";
 
 onMounted(() => getProcessTypes());
 
-const route = useRoute();
-
 const router = useRouter();
 
-const endpoint = ref("http://ai.solution.com/ID (학습)");
-
-const aiTypes = ref(AI_TYPES);
+const endpoint = ref("http://dt.solution.com/ID");
 
 const fields = ref({
   name: "",
   processType: "",
   processName: "",
   endpoint: "",
-  type: "",
-});
-
-const errorMessages = ref({
-  name: "",
-  processType: "",
-  processName: "",
-  endpoint: "",
-  type: "",
 });
 
 const processTypes = ref([]);
 
 const getProcessTypes = async () => {
-  const { data } = await axios.get("http://localhost:8204/api/ai/process/type");
+  try {
+    const { data } = await dtApi.get("/process/type");
 
-  processTypes.value = data;
+    processTypes.value = data;
+  } catch (error) {
+    alert("공정 타입 목록을 불러오는 데 실패했습니다. 잠시 후 다시 시도해주세요.");
+
+    processTypes.value = [];
+  }
 };
 
 const processNames = ref([]);
@@ -53,11 +45,16 @@ const isProcessNameDisabled = ref(true);
 const getProcessNames = async (type) => {
   const selectedProcessType = processTypes.value.find(opt => opt.name === type);
 
-  const { data } = await axios.get("http://localhost:8204/api/ai/process/name", {
+  try {
+    const { data } = await dtApi.get("/process/name", {
     params: { typeId: selectedProcessType.id }
   });
 
-  processNames.value = data;
+    processNames.value = data;
+  } catch (e) {
+    alert("공정명을 불러오는 데 실패했습니다. 다시 시도해주세요.");
+    processNames.value = [];
+  }
 };
 
 watch(() => fields.value.processType, (newValue, oldValue) => {
@@ -76,39 +73,26 @@ const alertType = ref("error");
 
 const isModalVisible = ref(false);
 
-const isAllFieldsFilled = () => {
-  return Object.entries(fields.value).every(([key, value]) => !!value);
-};
+const executeRegistration = async () => {
+  try {
+    const params = {
+      ...fields.value,
+      type: "DIGITAL_TWIN",
+      processId: processNames.value.find(o => o.name === fields.value.processName).id
+    };
+  
+    await dtApi.post("/conn", params);
 
-const handleRegisterClick = () => {
-  if (!isAllFieldsFilled()) {
-    alertMessage.value = "모든 필드를 입력해주세요.";
-    alertType.value = "error";
-    alertVisible.value = true;
-    return;
+    router.push({ name: "dtLinkMain" });
+  } catch (e) {
+    alert("등록 중 문제가 발생했습니다. 다시 시도해주세요.");
   }
-
-  isModalVisible.value = true;
-};
-
-const executeRegistration = () => {
-  const params = {
-    ...fields.value,
-    type: aiTypes.value.find(o => o.name === fields.value.type).value,
-    processId: processNames.value.find(o => o.name === fields.value.processName).id
-  };
-
-  axios.post("http://localhost:8204/api/ai/conn", params)
-    .then(() => { router.push({ name: "SolutionMain" }) });
 };
 
 const isCancelModalVisible = ref(false);
 
-
-
-
 const haveFieldsChanged = () => {
-  return Object.entries(fields.value).some(([key, value]) => !!value);
+  return Object.values(fields.value).some(val => !!val);
 };
 
 const handleCancelClick = () => {
@@ -119,9 +103,12 @@ const handleCancelClick = () => {
 
   isCancelModalVisible.value = true;
 }
-const isRegisterButtonDisabled = computed(() => {
-  return !isAllFieldsFilled();
-});
+
+const isAllFieldsFilled = () => {
+  return Object.values(fields.value).every(val => !!val);
+};
+
+const isRegisterButtonDisabled = computed(() => !isAllFieldsFilled() );
 
 const goBack = () => {
   window.history.back();
@@ -141,12 +128,12 @@ const goBack = () => {
           <Input v-model="endpoint" :is-disabled="true" readonly />
         </div>
 
-        <Form @submit.prevent="handleRegisterClick" class="add-form">
+        <Form class="add-form">
           <template #default>
             <div class="input-wrap">
               <div class="input-item">
                 <p class="tit">연계명</p>
-                <Input v-model="fields.name" placeholder="연계명을 입력하세요" :errorMessage="errorMessages.name" />
+                <Input v-model="fields.name" placeholder="연계명을 입력하세요" />
               </div>
 
               <div class="input-item">
@@ -163,7 +150,7 @@ const goBack = () => {
 
               <div class="input-item">
                 <p class="tit">연계ID</p>
-                <Input v-model="fields.endpoint" placeholder="연계ID를 입력하세요" :errorMessage="errorMessages.endpoint" />
+                <Input v-model="fields.endpoint" placeholder="연계ID를 입력하세요" />
               </div>
             </div>
           </template>
@@ -171,8 +158,7 @@ const goBack = () => {
         <div class="button-group right">
           <div class="buttons right-buttons">
             <Button label="취소" type="primary" class="cancel-btn" @click="handleCancelClick" />
-            <Button label="완료" type="primary" @click="handleRegisterClick" class="add-btn"
-              :disabled="isRegisterButtonDisabled" />
+            <Button label="완료" type="primary" @click="isModalVisible = true" class="add-btn" :disabled="isRegisterButtonDisabled" />
           </div>
         </div>
       </CardBox>

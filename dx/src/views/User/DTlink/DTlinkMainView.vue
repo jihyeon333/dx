@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, reactive, watch } from "vue";
+import { ref, computed, onMounted, reactive, watch, nextTick } from "vue";
 import { useRouter } from "vue-router";
 import Title from "@/components/common/Title.vue";
 import CardBox from "@/components/common/CardBox.vue";
@@ -11,17 +11,23 @@ import Button from "@/components/common/Button.vue";
 import customArrowIcon from '@/assets/image/icon/chevron-down.svg';
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import PaginationsView from "@/components/common/PaginationsView.vue";
-import axios from "axios";
-import { CATEGORIES, AI_TYPES } from '@/constants';
+import dtApi from "@/api/dtApi";
+import { DT_CATEGORIES } from "@/constants";
 
-onMounted(() => init());
+const isInitialized = ref(false);
+
+onMounted(async () => {
+  init();
+
+  await nextTick();
+
+  isInitialized.value = true;
+});
 
 const router = useRouter();
 
-const endpoint1 = ref("http://ai.solution.com/ID (학습)");
+const endpoint1 = ref("http://dt.solution.com/ID");
 const endpoint2 = ref("ws://dt.solution.com/ID");
-
-const aiTypes = ref(AI_TYPES);
 
 const fields = ref([]);
 
@@ -45,7 +51,7 @@ const init = () => {
   executeSearch();
 };
 
-const categories = ref(CATEGORIES);
+const categories = ref(DT_CATEGORIES);
 
 const selectedCategory = ref("연계명");
 
@@ -60,9 +66,7 @@ const handleSearch = () => {
 
   searchParams.value = {
     category: category,
-    keyword: category === 'type'
-      ? aiTypes.value.find(o => o.name === keyword.value)?.value || ''
-      : keyword.value,
+    keyword: keyword.value,
     page: currentPage.value,
     size: selectedSize.value
   };
@@ -73,25 +77,24 @@ const handleSearch = () => {
 const totalItems = ref(0);
 
 const executeSearch = async () => {
-  const { data: { total, apiList } } = await axios.get("http://localhost:8204/api/ai/conn", {
-    params: searchParams.value
-  });
+  try {
+    const { data: { total, apiList } } = await dtApi.get("/conn", {
+      params: searchParams.value
+    });
 
-  totalItems.value = total;
+    totalItems.value = total;
 
-  fields.value = apiList.map(d => ({
-    ...d,
-    type: aiTypes.value.find(o => o.value === d.type)?.name
-  }));
+    fields.value = apiList;
+  } catch (e) {
+    alert("데이터를 가져오는 데 실패했습니다.");
+  }
 };
 
 watch(
-  [() => currentPage.value, () => selectedSize.value],
-  ([], [oldPage, oldSize]) => {
-    if (!oldPage || oldSize) {
-      return;
+  [() => currentPage.value, () => selectedSize.value], () => {
+    if (isInitialized.value) {
+      handleSearch();
     }
-    handleSearch();
   }
 );
 
@@ -104,7 +107,6 @@ const columns = ref([
   { key: "processType", label: "공정종류", width: "17%", align: "text-center" },
   { key: "processName", label: "공정명", width: "17%", align: "text-center" },
   { key: "endpoint", label: "연계 ID", width: "17%", align: "text-center" },
-  { key: "type", label: "AI 종류", width: "17%", align: "text-center" },
   {
     key: "parameter",
     label: "파라미터",
@@ -133,20 +135,20 @@ const openDeleteConfirmModal = () => {
   modalState.confirmDelete = true;
 };
 
-const deleteRows = () => {
+const deleteRows = async () => {
   const params = selectedRows.value;
 
-  const baseURL = "http://localhost:8204/api/ai/conn";
+  try {
+    if (params.length === 1) {
+      await dtApi.delete(`/conn/${params}`);
+    } else {
+      await dtApi.delete("/conn", { data: params });
+    }
 
-  let action = ref(null);
-
-  if (params.length == 1) {
-    action = () => { return axios.delete(`${baseURL}/${params}`) };
-  } else {
-    action = () => { return axios.delete(baseURL, { data: params }) };
+    window.location.reload();
+  } catch (e) {
+    alert("삭제 중 문제가 발생했습니다. 다시 시도해주세요.");
   }
-
-  action().then(() => { window.location.reload() });
 };
 </script>
 
@@ -174,8 +176,8 @@ const deleteRows = () => {
             :arrowIcon="customArrowIcon" />
           <div class="Search">
             <Input v-model="keyword" placeholder="검색어를 입력해주세요." class="search-input" />
-            <Button :icon="faSearch" @click="handleSearch" class="search-btn" />
           </div>
+          <Button @click="handleSearch" class="search-btn" label="검색" />
         </div>
       </div>
       <div class="fix-table">

@@ -161,6 +161,7 @@
 	color: #717171;
 	word-break: break-word;
 }
+
 .modal-table {
 	display: table-column-group;
 	width: 100%;
@@ -221,8 +222,9 @@
 	word-break: keep-all;
 	display: inline-block;
 	padding: 0 50px;
-	height: 50px;
+	height: 45px;
 	font-size: 16px;
+	line-height: 1;
 	font-weight: 500;
 	transition: all 0.2s;
 	width: 100%;
@@ -305,7 +307,8 @@
 	flex-direction: column;
 	justify-content: space-between;
 }
-.deviceModal .modal-article .modal-content .modal-table-container {
+.deviceModal .modal-article .modal-content .modal-table-container,
+.tableModal .modal-article .modal-content .modal-table-container {
 	width: 100%;
 	height: 100%;
 	display: flex;
@@ -338,4 +341,69 @@
 	text-decoration: underline;
 	text-underline-offset: 3px;
 	text-decoration-style: dotted;
+}
+.verifyPasswordModal > .modal-article,
+.passwordResetModal > .modal-article {
+	max-width: 500px;
+	width: 100%;
+}
+.verifyPasswordModal > .modal-article .modal-header,
+.passwordResetModal > .modal-article .modal-header {
+	display: flex;
+}
+.verifyPasswordModal > .modal-article .modal-header h3,
+.passwordResetModal > .modal-article .modal-header h3 {
+	width: 100%;
+	font-size: 20px;
+	letter-spacing: -0.75px;
+	font-weight: 800;
+}
+.verifyPasswordModal > .modal-article .modal-content,
+.passwordResetModal > .modal-article .modal-content {
+	padding: 20px 30px;
+}
+
+.verifyPasswordModal > .modal-article .modal-content .modal-body,
+.passwordResetModal > .modal-article .modal-content .modal-body {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+	justify-content: center;
+	align-items: center;
+}
+.verifyPasswordModal > .modal-article .modal-content .modal-body p {
+	font-size: 16px;
+	letter-spacing: -0.75px;
+	color: #717171;
+}
+.verifyPasswordModal > .modal-article .modal-buttons,
+.passwordResetModal > .modal-article .modal-buttons {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+}
+.verifyPasswordModal > .modal-article .modal-buttons button,
+.passwordResetModal > .modal-article .modal-buttons button {
+	flex: 1;
+}
+.modal-buttons .cancel-btn {
+	border-radius: 8px;
+	background-color: #ffffff;
+	border: 1px solid #d9d9d9;
+}
+.modal-buttons .cancel-btn span {
+	color: #222222;
+}
+.modal-buttons .save-btn {
+	border-radius: 8px;
+	background-color: #003c7a;
+	border: 1px solid #003c7a;
+}
+.modal-buttons .save-btn span {
+	color: #ffffff;
+}
+.checkModal > .modal-article {
+	max-width: 400px;
+	width: 100%;
 }

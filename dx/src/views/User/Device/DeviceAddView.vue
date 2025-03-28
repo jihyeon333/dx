@@ -50,37 +50,86 @@ const cycleTypes = ref([
   { name: "25", value: "25" },
 ]);
 
+
+const isCancelModalVisible = ref(false);
+
+const handleCancelClick = () => {
+  isCancelModalVisible.value = true;
+};
+
+const handleRegisterClick = () => {
+  isModalVisible.value = true;
+};
+
+const isRegisterButtonDisabled = computed(() => {
+  return !fields.value.deviceName || !fields.value.protocol || !fields.value.cycle;
+});
+
+
+const isModalVisible = ref(false);
+
+
+
+const executeRegistration = () => {
+  console.log("장비 등록 확정!");
+  isModalVisible.value = false;
+
+  // 리스트 페이지로 이동
+  router.push({
+    path: "/user/device/",
+    query: { registered: "true" },
+  });
+};
+const goBack = () => {
+  router.push("/user/device"); // 리스트 페이지로 이동
+};
+
 </script>
 
 <template>
   <div class="contain">
     <div class="contents-wrap">
-      <Title text="장비추가" />
-      <CardBox class="card">
-
+      <Title text="장비 추가" />
+      <CardBox class="noneBorder">
         <Form class="add-form">
           <template #default>
             <div class="input-wrap">
               <div class="input-item">
                 <p class="tit">장비명</p>
-                <Input v-model="fields.name" placeholder="장비명을 입력하세요" :errorMessage="errorMessages.name" />
+                <Input v-model="fields.deviceName" placeholder="장비명을 입력하세요" :errorMessage="errorMessages.name" />
               </div>
               <div class="input-item">
                 <p class="tit">프로토콜</p>
-                <DropdownMenu v-model="fields.protocolTypes" :options="protocolTypes" option-label="name"
+                <DropdownMenu v-model="fields.protocol" :options="protocolTypes" option-label="name"
                   option-value="value" placeholder="프로토콜" type="radio" :arrowIcon="customArrowIcon" />
               </div>
               <div class="input-item">
                 <p class="tit">수집주기</p>
-                <DropdownMenu v-model="fields.cycleTypes" :options="cycleTypes" option-label="name" option-value="value"
+                <DropdownMenu v-model="fields.cycle" :options="cycleTypes" option-label="name" option-value="value"
                   placeholder="수집주기" type="radio" :arrowIcon="customArrowIcon" />
               </div>
-
             </div>
           </template>
         </Form>
+        <div class="button-group right">
+          <div class="buttons right-buttons">
+            <Button label="취소" type="primary" class="cancel-btn" @click="handleCancelClick" />
+            <Button label="완료" type="primary" @click="handleRegisterClick" class="add-btn"
+              :disabled="isRegisterButtonDisabled" />
+          </div>
+        </div>
       </CardBox>
     </div>
+    <Modal :show="isModalVisible" title="장비추가" message="장비를 추가하시겠습니까?" @update:show="isModalVisible = $event"
+      @confirm="executeRegistration" @cancel="isModalVisible = false" class="confirmModal" />
 
+    <Modal :show="isCancelModalVisible" title="알림" confirmText="확인" cancelText="취소"
+      @update:show="isCancelModalVisible = $event" @confirm="goBack" @cancel="isCancelModalVisible = false"
+      class="alertModal">
+      <template #default>
+        <p>작성중인 내용이 있습니다.</p>
+        <p>나가시겠습니까?</p>
+      </template>
+    </Modal>
   </div>
 </template>

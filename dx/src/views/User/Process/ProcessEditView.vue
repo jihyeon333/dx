@@ -50,13 +50,13 @@ const processDetail = ref([
 ]);
 
 const columns = ref([
-  { key: "deviceName", label: "장비명", width: "20%", align: "text-center" },
+  { key: "deviceName", label: "장비명", width: "300px", align: "text-center" },
   { key: "kind", label: "종류", width: "10%", align: "text-center" },
-  { key: "protocol", label: "프로토콜", width: "17%", align: "text-center" },
+  { key: "protocol", label: "프로토콜", width: "20%", align: "text-center" },
   { key: "connectionData", label: "연결정보", width: "20%", align: "text-center" },
   { key: "status", label: "상태", width: "5%", align: "text-center", type: "badge" },
   { key: "cycle", label: "주기(초)", width: "5%", align: "text-center" },
-  { key: "changeState", label: "상태변경", width: "10%", align: "text-center", type: "toggle-button" },
+  { key: "changeState", label: "상태변경", width: "150px", align: "text-center", type: "toggle-button" },
 ]);
 
 // 더미 데이터 (회원 목록)

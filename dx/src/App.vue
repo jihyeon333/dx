@@ -1,6 +1,12 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
+import { useLoadingStore } from '@/stores/loadingStore';
+import { storeToRefs } from 'pinia';
+import LoadingSpinner from '@/components/common/LoadingSpinner.vue';
+
+const loadingStore = useLoadingStore();
+const { isLoading } = storeToRefs(loadingStore);
 
 const router = useRouter();
 const isLoggedIn = ref(!!localStorage.getItem("userToken"));
@@ -29,6 +35,7 @@ window.addEventListener("storage", () => {
 </script>
 
 <template>
+    <LoadingSpinner v-if="isLoading" />
     <!-- 로그인 상태를 `router-view`와 `Header`에 전달 -->
     <router-view :isLoggedIn="isLoggedIn" @login="handleLogin" @logout="handleLogout" />
 </template>

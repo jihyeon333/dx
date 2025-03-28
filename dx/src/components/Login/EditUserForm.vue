@@ -8,15 +8,22 @@ import Button from '@/components/common/Button.vue';
 import RadioCheckbox from "@/components/common/RadioCheckbox.vue";
 import Modal from '../common/Modal.vue';
 
+
+const emits = defineEmits(['closeModal', 'updateUserSuccess']);
+
 const props = defineProps({
     isModal: { type: Boolean, default: false },
     isAdminMode: { type: Boolean, default: false },
     initialFields: { type: Object, default: () => ({}) },
     submitLabel: { type: String, default: "수정" },
     onSubmit: { type: Function, default: null },
+    title: {
+        type: String,
+        default: "회원 정보 수정",
+    },
 });
 
-const emits = defineEmits(['closeModal', 'updateUserSuccess']);
+
 const router = useRouter();
 const selectedCategory = ref("연계명");
 const fields = ref({
@@ -38,34 +45,44 @@ watch(() => props.initialFields, (newFields) => {
 
 const { errorMessage, validateField } = useValidation(fields);
 
-// ✅ 비밀번호 변경 모달 상태
-const isPasswordResetModalOpen = ref(false);
+// 비밀번호 변경 모달 상태
+const isPasswordResetModalOpen = ref(false);        // 새 비밀번호 입력
+const isPasswordVerifyModalOpen = ref(false);       // 비밀번호 인증
 const isNestedModalVisible = ref(false); // 중첩 모달 상태
 const modalTitle = ref("");
 const modalMessage = ref("");
 const modalType = ref("");
+const passwordVerifyField = ref('');
 
-// ✅ 비밀번호 변경 입력 필드
+
+// 비밀번호 변경 입력 필드
 const passwordFields = ref({
     currentPassword: '',
     newPassword: '',
     confirmNewPassword: ''
 });
 
-// ✅ 비밀번호 변경 모달 열기
-const openPasswordResetModal = () => {
-    isPasswordResetModalOpen.value = true;
+// 비밀번호 변경 버튼 클릭 → 인증 모달 열기
+const onClickPasswordReset = () => {
+    isPasswordVerifyModalOpen.value = true;
 };
-
-// ✅ 비밀번호 변경 확인 모달 열기
-const confirmPasswordReset = () => {
-    if (!passwordFields.value.currentPassword.trim()) {
+// 인증확인
+const verifyCurrentPassword = () => {
+    if (!passwordVerifyField.value.trim()) {
         modalTitle.value = "입력 오류";
         modalMessage.value = "현재 비밀번호를 입력해주세요.";
         modalType.value = "error";
         isNestedModalVisible.value = true;
         return;
     }
+
+    // 퍼블리싱용: 인증 성공 시 변경 모달 열기
+    isPasswordVerifyModalOpen.value = false;
+    isPasswordResetModalOpen.value = true;
+};
+
+// 비밀번호 변경확인
+const confirmPasswordReset = () => {
     if (!passwordFields.value.newPassword.trim()) {
         modalTitle.value = "입력 오류";
         modalMessage.value = "새 비밀번호를 입력해주세요.";
@@ -73,6 +90,7 @@ const confirmPasswordReset = () => {
         isNestedModalVisible.value = true;
         return;
     }
+
     if (passwordFields.value.newPassword !== passwordFields.value.confirmNewPassword) {
         modalTitle.value = "비밀번호 불일치";
         modalMessage.value = "새 비밀번호가 일치하지 않습니다.";
@@ -84,29 +102,28 @@ const confirmPasswordReset = () => {
     modalTitle.value = "비밀번호 변경 완료";
     modalMessage.value = "비밀번호가 성공적으로 변경되었습니다.";
     modalType.value = "success";
+    isPasswordResetModalOpen.value = false;
     isNestedModalVisible.value = true;
 };
 
-// ✅ 모달 닫기
-const closePasswordResetModal = () => {
-    isPasswordResetModalOpen.value = false;
-};
+const closePasswordVerifyModal = () => isPasswordVerifyModalOpen.value = false;
+const closePasswordResetModal = () => isPasswordResetModalOpen.value = false;
+const closeNestedModal = () => isNestedModalVisible.value = false;
 
-// ✅ 중첩 모달 닫기
-const closeNestedModal = () => {
-    isNestedModalVisible.value = false;
-};
 
-// ✅ 회원 정보 수정 제출
+
+// 회원 정보 수정 제출
 const submitForm = () => {
     props.onSubmit?.(fields.value);
     emits("updateUserSuccess", fields.value);
-    emits("closeModal");
+    emits("closeModal"); //
 };
+
+
 </script>
 
 <template>
-    <Form title="회원 정보 수정" @submit.prevent="submitForm" class="sign-form" buttonPosition="inside">
+    <Form :title="title" @submit.prevent="submitForm" class="sign-form" buttonPosition="inside">
         <div class="input-wrap">
             <!-- 아이디 (수정 불가) -->
             <div class="input-item">
@@ -124,12 +141,12 @@ const submitForm = () => {
                 <Input v-model="fields.userName" :isDisabled="true" />
             </div>
 
-            <!-- ✅ 비밀번호 변경 버튼 -->
+            <!-- 비밀번호 변경 버튼 -->
             <div class="input-item">
                 <div class="title">
                     <p class="tit">비밀번호</p>
                 </div>
-                <Button label="비밀번호 초기화" type="button" @click="openPasswordResetModal" class="reset-btn" />
+                <Button label="비밀번호 초기화" type="button" @click="onClickPasswordReset" class="reset-btn" />
             </div>
 
             <!-- 전화번호 -->
@@ -180,10 +197,24 @@ const submitForm = () => {
         </template>
     </Form>
 
-    <!-- ✅ 비밀번호 변경 모달 -->
+    <!-- 비밀번호 인증모달 -->
+    <Modal :show="isPasswordVerifyModalOpen" title="비밀번호 확인" class="verifyPasswordModal"
+        @close="closePasswordVerifyModal">
+        <div class="modal-body">
+            <p class="modal-desc">
+                개인 정보 조회를 위해서는 인증이 필요합니다.<br />
+                비밀번호 입력 후 확인 버튼을 클릭해 주세요.
+            </p>
+            <Input v-model="passwordVerifyField" type="password" placeholder="현재 비밀번호" />
+        </div>
+        <template #footer>
+            <Button label="취소" @click="closePasswordVerifyModal" class="cancel-btn" />
+            <Button label="확인" @click="verifyCurrentPassword" class="save-btn" />
+        </template>
+    </Modal>
+    <!-- 비밀번호 변경 모달 -->
     <Modal :show="isPasswordResetModalOpen" title="비밀번호 변경" class="passwordResetModal" @close="closePasswordResetModal">
         <div class="modal-body">
-            <Input v-model="passwordFields.currentPassword" type="password" placeholder="현재 비밀번호" />
             <Input v-model="passwordFields.newPassword" type="password" placeholder="새 비밀번호" />
             <Input v-model="passwordFields.confirmNewPassword" type="password" placeholder="새 비밀번호 확인" />
         </div>
@@ -192,8 +223,7 @@ const submitForm = () => {
             <Button label="확인" @click="confirmPasswordReset" class="save-btn" />
         </template>
     </Modal>
-
-    <!-- ✅ 중첩 모달 -->
+    <!-- 알림 메시지용 모달 (공통 사용) -->
     <Modal :show="isNestedModalVisible" :title="modalTitle" :message="modalMessage" :modalClass="modalType"
-        @close="closeNestedModal" class="checkModal" />
+        @close="closeNestedModal" @confirm="closeNestedModal" class="checkModal" :showCancel="false" />
 </template>

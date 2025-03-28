@@ -3,6 +3,8 @@ import { ref, defineProps, defineEmits } from "vue";
 import SearchFilter from "@/components/common/SearchFilter.vue";
 import Button from "./Button.vue";
 
+import upIcon from "@/assets/image/icon/"
+
 defineProps({
   filterOptions: {
     type: Array,

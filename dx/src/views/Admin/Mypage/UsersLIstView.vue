@@ -160,6 +160,12 @@ const openDeleteConfirmModal = () => {
 };
 
 
+const closeKeyModal = (rowId) => {
+  if (rowModals.value[rowId]) {
+    rowModals.value[rowId].show = false;
+  }
+};
+
 </script>
 
 <template>
@@ -177,8 +183,8 @@ const openDeleteConfirmModal = () => {
             placeholder="선택" type="radio" :arrowIcon="customArrowIcon" />
           <div class="Search">
             <Input v-model="searchQuery" placeholder="검색어를 입력해주세요." class="search-input" />
-            <Button :icon="faSearch" @click="updateFilter" class="search-btn" />
           </div>
+          <Button @click="updateFilter" class="search-btn" label="검색" />
         </div>
       </div>
       <!-- 테이블 -->
@@ -200,8 +206,8 @@ const openDeleteConfirmModal = () => {
       :overlayClosable="false" />
     <!-- 키보기 모달 -->
     <template v-for="(modal, rowId) in rowModals" :key="rowId">
-      <Modal :show="modal.show" :title="modal.title" :modalClass="modal.type" @confirm="modal.show = false"
-        @close="modal.show = false" :showCancel="false" :showCloseButton="true" class="informModal"
+      <Modal v-model:show="modal.show" :title="modal.title" :modalClass="modal.type" @confirm="closeKeyModal(rowId)"
+        @close="closeKeyModal(rowId)" :showCancel="false" :showCloseButton="true" class="informModal"
         :overlayClosable="false">
         <div v-html="modal.message"></div>
       </Modal>
@@ -214,8 +220,9 @@ const openDeleteConfirmModal = () => {
     </Modal>
 
     <!-- 회원 수정 모달 -->
-    <Modal :show="isEditModalOpen" :showButtons="false" class="editModal">
-      <EditUserForm v-if="selectedUser" :user="selectedUser" @closeModal="closeEditModal" />
+    <Modal v-model:show="isEditModalOpen" :showButtons="false" class="editModal" :overlayClosable="false">
+      <EditUserForm v-if="selectedUser" :user="selectedUser" @closeModal="closeEditModal"
+        @updateUserSuccess="handleEditSuccess" />
     </Modal>
 
   </div>

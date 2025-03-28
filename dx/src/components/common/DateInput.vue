@@ -1,9 +1,9 @@
 <script setup>
-import { ref, watch } from 'vue';
-import VueDatePicker from '@vuepic/vue-datepicker';
-import '@vuepic/vue-datepicker/dist/main.css';
-import dayjs from 'dayjs';
-import calendarIcon from "@/assets/image/icon/calendar_icon.svg";
+import { ref, watch } from 'vue'
+import VueDatePicker from '@vuepic/vue-datepicker'
+import '@vuepic/vue-datepicker/dist/main.css'
+import dayjs from 'dayjs'
+import calendarIcon from '@/assets/image/icon/calendar_icon.svg'
 
 const props = defineProps({
   modelValue: {
@@ -14,14 +14,18 @@ const props = defineProps({
     type: String,
     default: '기간 선택'
   },
-});
+  enableTime: {
+    type: Boolean,
+    default: false
+  }
+})
 
 const emit = defineEmits(['update:modelValue'])
 
 const internalRange = ref(props.modelValue)
 
 watch(() => props.modelValue, (val) => {
-  internalRange.value = val;
+  internalRange.value = val
 })
 
 const onRangeSelect = (range) => {
@@ -31,12 +35,14 @@ const onRangeSelect = (range) => {
 
 <template>
   <div class="date-picker-wrapper">
-    <VueDatePicker v-model="internalRange" range :teleport="false" :format="'yyyy-MM-dd'" :enable-time-picker="false"
-      :auto-apply="true" @update:modelValue="onRangeSelect" @open="$emit('focus')" @closed="$emit('blur')">
+    <VueDatePicker v-model="internalRange" range :teleport="false" locale="ko"
+      :format="props.enableTime ? 'yyyy-MM-dd hh:mm A' : 'yyyy-MM-dd'" :enable-time-picker="props.enableTime"
+      :is-24="props.enableTime ? false : true" :auto-apply="true" :clearable="true" @update:modelValue="onRangeSelect"
+      @open="$emit('focus')" @closed="$emit('blur')">
       <template #trigger>
         <div class="input-wrapper">
           <input type="text" class="date-input" :value="internalRange?.length === 2
-            ? `${dayjs(internalRange[0]).format('YYYY-MM-DD')} ~ ${dayjs(internalRange[1]).format('YYYY-MM-DD')}`
+            ? `${dayjs(internalRange[0]).format(props.enableTime ? 'YYYY-MM-DD hh:mm A' : 'YYYY-MM-DD')} ~ ${dayjs(internalRange[1]).format(props.enableTime ? 'YYYY-MM-DD hh:mm A' : 'YYYY-MM-DD')}`
             : ''" readonly :placeholder="placeholder" @focus="$emit('focus')" @blur="$emit('blur')" />
           <img :src="calendarIcon" class="calendarIcon" />
         </div>

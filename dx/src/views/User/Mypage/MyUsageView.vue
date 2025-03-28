@@ -150,16 +150,17 @@ const yearlyLineData = {
 
 // 테이블 컬럼 정의
 const columnsUseage = ref([
-  { key: "data", label: "사용일시", width: "25%", align: "text-center" },
-  { key: "count", label: "사용회수", width: "25%", align: "text-center" },
-  { key: "usage", label: "사용량(MB)", width: "25%", align: "text-center" },
-  { key: "type", label: "회원형태", width: "25%", align: "text-center" },
+  { key: "uaerID", label: "사용자ID", width: "14%", align: "text-center" },
+  { key: "name", label: "회원명", width: "14%", align: "text-center" },
+  { key: "date", label: "사용일시", width: "14%", align: "text-center" },
+  { key: "count", label: "사용횟수", width: "14%", align: "text-center" },
+  { key: "usage", label: "사용량(MB)", width: "14%", align: "text-center" },
+  { key: "memberType", label: "회원형태", width: "14%", align: "text-center" },
+  { key: "company", label: "회사명", width: "14%", align: "text-center" },
 ]);
 
 const dataUseage = ref([
-  { id: 1, data: '2025-03-20 14:00', count: 3, usage: 15, type: '솔루션' },
-  { id: 2, data: '2025-03-20 15:00', count: 1, usage: 5, type: 'DT' },
-  { id: 3, data: '2025-03-21 09:00', count: 2, usage: 8, type: 'DT' },
+  { id: 1, uaerID: 'Front', name: "홍길동", date: '2025-03-20 14:00', count: 3, usage: 15, memberType: "솔루션", company: '네트로' },
 ]);
 
 
@@ -192,8 +193,8 @@ const dataUseage = ref([
               type="radio" :arrowIcon="customArrowIcon" />
           </div>
           <div class="date-range">
-            <DateRangePicker v-model="dateRange" :isRange="true" :enableTime="false" placeholder="날짜 범위 선택"
-              class="search-date" />
+            <DateRangePicker v-model="dateRange" :isRange="true" placeholder="날짜 범위 선택" class="search-date"
+              :enableTime="false" />
           </div>
           <Button label="검색" class="search-btn" />
         </div>
@@ -277,7 +278,7 @@ const dataUseage = ref([
         </div>
       </div>
       <div v-if="activeTab === 'tab3'" class="tab-content">
-        <div class="fix-table">
+        <div class="fix-table data-table">
           <DataTable ref="tableUseage" :columns="columnsUseage" :data="dataUseage" class="fix fixed" />
           <PaginationsView />
         </div>

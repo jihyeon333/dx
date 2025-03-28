@@ -56,7 +56,7 @@ const selectedText = computed(() => {
     props.modelValue === undefined ||
     (Array.isArray(props.modelValue) && props.modelValue.length === 0);
 
-  // pagination 모드는 값만 바로 출력
+  if (!props.options || !Array.isArray(props.options)) return props.placeholder;
   if (props.mode === 'pagination') {
     return isEmpty ? props.placeholder : String(props.modelValue);
   }
@@ -64,6 +64,7 @@ const selectedText = computed(() => {
   if (isEmpty) return props.placeholder;
 
   const extractLabel = (val) => {
+    if (!props.options) return props.placeholder;
     const found = props.options.find((opt) =>
       typeof opt === "object"
         ? String(opt[props.optionValue]) === String(val)
@@ -162,19 +163,21 @@ onUnmounted(() => {
     </div>
 
     <div v-show="showDropdown && !isDisabled" class="dropdown-menu" :class="[dropdownPosition]" ref="dropdownMenuRef">
-      <ul class="menu-list">
-        <li v-for="option in options" :key="typeof option === 'object' ? option[optionValue] : option" class="list">
-          <label>
-            <div class="item">
-              <input :type="type" :value="typeof option === 'object' ? option[optionValue] : option" :checked="type === 'radio'
-                ? modelValue === (typeof option === 'object' ? option[optionValue] : option)
-                : (Array.isArray(modelValue) && modelValue.includes(typeof option === 'object' ? option[optionValue] : option))
-                " @change="selectOption(typeof option === 'object' ? option[optionValue] : option)" />
-              {{ typeof option === 'object' ? option[optionLabel] : option }}
-            </div>
-          </label>
-        </li>
-      </ul>
+      <div class="menu-list-wrap">
+        <ul class="menu-list">
+          <li v-for="option in options" :key="typeof option === 'object' ? option[optionValue] : option" class="list">
+            <label>
+              <div class="item">
+                <input :type="type" :value="typeof option === 'object' ? option[optionValue] : option" :checked="type === 'radio'
+                  ? modelValue === (typeof option === 'object' ? option[optionValue] : option)
+                  : (Array.isArray(modelValue) && modelValue.includes(typeof option === 'object' ? option[optionValue] : option))
+                  " @change="selectOption(typeof option === 'object' ? option[optionValue] : option)" />
+                {{ typeof option === 'object' ? option[optionLabel] : option }}
+              </div>
+            </label>
+          </li>
+        </ul>
+      </div>
     </div>
 
     <p v-show="errorMessage" class="ipt-error" role="alert">{{ errorMessage }}</p>

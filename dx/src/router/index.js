@@ -20,11 +20,17 @@ const processAdd = () => import("@/views/User/Process/ProcessAddView.vue");
 const processEdit = () => import("@/views/User/Process/ProcessEditView.vue");
 
 // 데이터관리 내부페이지
+const dataMain = () => import("@/views/User/Data/DataMainView.vue");
+const dataDeviceList = () => import("@/views/User/Data/DeviceListView.vue");
+const dataDeviceView = () => import("@/views/User/Data/DeviceDataView.vue");
+const dataGraph = () => import("@/views/User/Data/GraphMainView.vue");
+const dataCCTV = () => import("@/views/User/Data/CCTVMainView.vue");
 
 // 장비관리내부페이지
 const deviceMain = () => import("@/views/User/Device/DeviceMainView.vue");
 const deviceAdd = () => import("@/views/User/Device/DeviceAddView.vue");
 const deviceEdit = () => import("@/views/User/Device/DeviceEditView.vue");
+const deviceFormat = () => import("@/views/User/Device/DeviceFormat.vue");
 
 //  솔루션 내부 페이지 Lazy Loading 적용
 const solutionMain = () => import("@/views/User/Solution/SolutionMainView.vue");
@@ -42,10 +48,14 @@ const dtLinkParams = () => import("@/views/User/DTlink/DTlinkParamsView.vue");
 const userMypage = () => import("@/views/User/Mypage/UserMypageView.vue");
 const adminMypage = () => import("@/views/Admin/Mypage/AdminMypageView.vue");
 
+// 일반회원마이페이지
+const userMyProfile = () => import("@/views/User/Mypage/MyProfileView.vue");
+const userMyUsage = () => import("@/views/User/Mypage/MyUsageView.vue");
+
 // 관리자마이페이지
-const usersList = () => import("@/views/Admin/Mypage/UsersLIstView.vue");
-const usersApproval = () => import("@/views/Admin/Mypage/UsersApprovalView.vue");
-const usersUsage = () => import("@/views/Admin/Mypage/UsersUsageView.vue");
+const adminUsersList = () => import("@/views/Admin/Mypage/UsersListView.vue");
+const adminUsersApproval = () => import("@/views/Admin/Mypage/UsersApprovalView.vue");
+const adminUsersUsage = () => import("@/views/Admin/Mypage/UsersUsageView.vue");
 
 // 사용자마이페이지
 
@@ -74,7 +84,7 @@ const routes = [
 	{
 		path: "/user",
 		component: UserLayout,
-		meta: [{ requiresAuth: true }],
+		meta: { requiresAuth: true },
 		children: [
 			{
 				path: "process",
@@ -85,7 +95,69 @@ const routes = [
 					{ path: "edit", name: "ProcessEdit", component: processEdit, props: true },
 				],
 			},
-			{ path: "data", name: "Data", component: data },
+			// 데이터관리
+			{
+				path: "data",
+				component: data,
+				children: [
+					{ path: "", name: "dataMain", component: dataMain },
+					{
+						path: "list",
+						children: [
+							{
+								path: ":processId",
+								name: "dataDeviceList",
+								component: dataDeviceList,
+								props: (route) => ({
+									processId: route.params.processId,
+									processName: route.query.processName,
+								}),
+								beforeEnter: (to, from, next) => {
+									const { processId } = to.params;
+									if (!processId || processId === "undefined") next({ name: "dataMain" });
+									else next();
+								},
+							},
+							{
+								path: ":processId/view",
+								name: "dataDeviceView",
+								component: dataDeviceView,
+								props: (route) => ({
+									processId: route.params.processId,
+									processName: route.query.processName,
+								}),
+								beforeEnter: (to, from, next) => {
+									const { processId } = to.params;
+									if (!processId || processId === "undefined") next({ name: "dataMain" });
+									else next();
+								},
+							},
+							{
+								path: ":processId/graph/:deviceId",
+								name: "dataGraph",
+								component: dataGraph,
+								props: true,
+								beforeEnter: (to, from, next) => {
+									const { processId, deviceId } = to.params;
+									if (!processId || !deviceId || processId === "undefined" || deviceId === "undefined") next({ name: "dataMain" });
+									else next();
+								},
+							},
+							{
+								path: ":processId/cctv/:deviceId",
+								name: "dataCCTV",
+								component: dataCCTV,
+								props: true,
+								beforeEnter: (to, from, next) => {
+									const { processId, deviceId } = to.params;
+									if (!processId || !deviceId || processId === "undefined" || deviceId === "undefined") next({ name: "dataMain" });
+									else next();
+								},
+							},
+						],
+					},
+				],
+			},
 			{
 				path: "device",
 				component: device, // 장비관리 메인 레이아웃
@@ -93,6 +165,7 @@ const routes = [
 					{ path: "", name: "deviceMain", component: deviceMain }, // 기본 페이지
 					{ path: "add", name: "deviceAdd", component: deviceAdd },
 					{ path: "edit", name: "deviceEdit", component: deviceEdit, props: true },
+					{ path: "format", name: "deviceFormat", component: deviceFormat },
 				],
 			},
 			{
@@ -117,7 +190,16 @@ const routes = [
 			},
 
 			// 일반 사용자 마이페이지 추가
-			{ path: "mypage", name: "UserMypage", component: userMypage, meta: { requiresAuth: true } },
+			{
+				path: "mypage",
+				meta: { requiresAuth: true },
+				component: userMypage,
+				children: [
+					{ path: "", redirect: "/user/mypage/profile" }, // 기본 마이페이지
+					{ path: "profile", name: "userMyProfile", component: userMyProfile }, //내 프로필
+					{ path: "myusage", name: "userMyUsage", component: userMyUsage }, // 내 사용정보
+				],
+			},
 		],
 	},
 
@@ -132,9 +214,9 @@ const routes = [
 				component: adminMypage, // 관리자 마이페이지 메인
 				children: [
 					{ path: "", redirect: "/admin/mypage/userlist" }, // 기본 마이페이지
-					{ path: "userlist", name: "usersList", component: usersList }, // 회원관리
-					{ path: "approval", name: "usersApproval", component: usersApproval }, // 사용자 승인관리
-					{ path: "usage", name: "usersUsage", component: usersUsage }, // 사용정보
+					{ path: "userlist", name: "usersList", component: adminUsersList }, // 회원관리
+					{ path: "userapproval", name: "usersApproval", component: adminUsersApproval }, // 사용자 승인관리
+					{ path: "userusage", name: "usersUsage", component: adminUsersUsage }, // 사용정보
 				],
 			},
 		],

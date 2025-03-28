@@ -19,7 +19,9 @@ const headerClass = computed(() => {
 });
 
 //  마이페이지 여부 확인
-const isMypage = computed(() => route.path.startsWith("/mypage") || route.path.startsWith("/admin/mypage"));
+const isMypage = computed(() =>
+  route.path.startsWith("/user/mypage") || route.path.startsWith("/admin/mypage")
+);
 </script>
 
 <template>

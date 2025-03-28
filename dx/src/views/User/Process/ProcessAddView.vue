@@ -13,7 +13,6 @@ import PaginationsView from "@/components/common/PaginationsView.vue";
 import upIcon from "@/assets/image/icon/up_icon.svg";
 import downIcon from "@/assets/image/icon/down_icon.svg";
 import Modal from "@/components/common/Modal.vue";
-import PagingView from "@/components/common/PagingView.vue";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 
 
@@ -47,13 +46,13 @@ const processDetail = ref([
 ]);
 
 const columns = ref([
-  { key: "deviceName", label: "장비명", width: "20%", align: "text-center" },
+  { key: "deviceName", label: "장비명", width: "300px", align: "text-center" },
   { key: "kind", label: "종류", width: "10%", align: "text-center" },
-  { key: "protocol", label: "프로토콜", width: "17%", align: "text-center" },
+  { key: "protocol", label: "프로토콜", width: "20%", align: "text-center" },
   { key: "connectionData", label: "연결정보", width: "20%", align: "text-center" },
   { key: "status", label: "상태", width: "5%", align: "text-center", type: "badge" },
   { key: "cycle", label: "주기(초)", width: "5%", align: "text-center" },
-  { key: "changeState", label: "상태변경", width: "10%", align: "text-center", type: "toggle-button" },
+  { key: "changeState", label: "상태변경", width: "150px", align: "text-center", type: "toggle-button" },
 ]);
 
 // 더미 데이터 (회원 목록)
@@ -104,7 +103,6 @@ const moveRowDown = (row) => {
 
 const orderColumn = {
   label: "순서변경",
-  width: "100px",
   actions: [
     {
       label: "위로",
@@ -275,9 +273,8 @@ const handleCancelClick = () => {
     <Modal :show="showDeleteModal" title="장비삭제" :message="`${selectedRows.length}개의 항목을 삭제하시겠습니까?`" confirmText="확인"
       cancelText="취소" @confirm="confirmDelete" @close="showDeleteModal = false" @cancel="showDeleteModal = false" />
 
-    <Modal :show="isTableModalVisible" title="장비" :showCloseButton="true" :overlayClosable="false" :showCancel="false"
-      :showConfirm="false" :showFooter="false" :showButtons="false" class="deviceModal"
-      @close="isTableModalVisible = false">
+    <Modal v-model:show="isTableModalVisible" title="장비" :showCloseButton="true" :overlayClosable="false"
+      :showCancel="false" :showConfirm="false" :showFooter="false" :showButtons="false" class="deviceModal">
       <template #default>
         <div class="modal-table-container">
           <div class="SearchBar right">
@@ -286,8 +283,8 @@ const handleCancelClick = () => {
                 placeholder="선택" type="radio" :arrowIcon="customArrowIcon" />
               <div class="Search">
                 <Input v-model="keyword" placeholder="검색어를 입력해주세요." class="search-input" />
-                <Button :icon="faSearch" @click="handleSearch" class="search-btn" />
               </div>
+              <Button @click="handleSearch" class="search-btn" label="검색" />
             </div>
           </div>
           <table class="modal-table">
@@ -317,7 +314,7 @@ const handleCancelClick = () => {
             </tbody>
           </table>
           <div class="PagingView">
-            <PagingView />
+            <PaginationsView :totalItems="50" :showView="false" />
           </div>
         </div>
       </template>

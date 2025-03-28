@@ -6,7 +6,6 @@ import DropdownMenu from '@/components/common/DropdownMenu.vue';
 import customArrowIcon from '@/assets/image/icon/chevron-down.svg';
 import Input from "@/components/common/Input.vue";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
-
 import DataTable from "@/components/common/DataTable.vue";
 import PaginationsView from "@/components/common/PaginationsView.vue";
 import Modal from "@/components/common/Modal.vue";
@@ -146,8 +145,8 @@ const dataAPIKey = ref([
             <!-- 검색 입력창 -->
             <div class="Search">
               <Input v-model="searchQuery" placeholder="검색어를 입력해주세요." class="search-input" />
-              <Button :icon="faSearch" @click="updateFilter" class="search-btn" />
             </div>
+            <Button @click="updateFilter" class="search-btn" label="검색" />
           </div>
         </div>
 

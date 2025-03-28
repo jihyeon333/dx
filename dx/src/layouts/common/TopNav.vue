@@ -13,14 +13,13 @@ const user = computed(() => JSON.parse(localStorage.getItem("user") ?? "{}"));
 const isAdmin = computed(() => user.value.role === "admin");
 
 // 현재 경로가 해당 경로로 시작하는지 정확히 체크하는 함수
-const isActive = (path) => {
-  return computed(() =>
-    route.path === path || route.path.startsWith(path + "/")
-  );
-};
+const isMypageRoute = computed(() => {
+  return route.path.startsWith("/user/mypage") || route.path.startsWith("/admin/mypage");
+});
 
-// 마이페이지 경로 설정 (관리자 / 일반 사용자 구분)
 const mypagePath = computed(() => (isAdmin.value ? "/admin/mypage" : "/user/mypage"));
+
+const isActive = (path) => route.path.startsWith(path);
 
 // 로그아웃 처리 함수
 const triggerLogout = () => {
@@ -45,39 +44,39 @@ const goToPage = (path) => {
       </div>
       <nav class="gnb">
         <ul class="nav-list">
-          <li class="menu" :class="{ active: isActive('/user/process').value }">
+          <li class="menu" :class="{ active: isActive('/user/process') }">
             <a href="#" @click.prevent="goToPage('/user/process')">공정관리</a>
           </li>
-          <li class="menu" :class="{ active: isActive('/user/data').value }">
+          <li class="menu" :class="{ active: isActive('/user/data') }">
             <a href="#" @click.prevent="goToPage('/user/data')">데이터관리</a>
           </li>
-          <li class="menu" :class="{ active: isActive('/user/device').value }">
+          <li class="menu" :class="{ active: isActive('/user/device') }">
             <a href="#" @click.prevent="goToPage('/user/device')">장비관리</a>
           </li>
-          <li class="menu" :class="{ active: isActive('/user/solution').value }">
+          <li class="menu" :class="{ active: isActive('/user/solution') }">
             <a href="#" @click.prevent="goToPage('/user/solution')">실증솔루션 연계관리</a>
           </li>
-          <li class="menu" :class="{ active: isActive('/user/dtLink').value }">
+          <li class="menu" :class="{ active: isActive('/user/dtLink') }">
             <a href="#" @click.prevent="goToPage('/user/dtLink')">DT연계관리</a>
           </li>
         </ul>
       </nav>
       <div class="right">
         <ul class="link-list">
-          <li class="link" :class="{ active: isActive('/').value }">
+          <li class="link" :class="{ active: isActive('/intro') }">
             <router-link to="/">DX플랫폼 소개</router-link>
           </li>
 
           <!-- 마이페이지 링크 (사용자 유형에 따라 다르게 설정) -->
-          <li class="link" :class="{ active: isActive(mypagePath.value).value }">
-            <router-link :to="isAdmin ? '/admin/mypage' : '/user/mypage'">마이페이지</router-link>
+          <li class="link" :class="{ active: isMypageRoute }">
+            <router-link :to="mypagePath">마이페이지</router-link>
           </li>
 
           <li class="link">
             <router-link to="/auth/login" @click="triggerLogout">로그아웃</router-link>
           </li>
 
-          <li class="link" :class="{ active: isActive('/contact').value }">
+          <li class="link" :class="{ active: isActive('/contact') }">
             <router-link to="/contact">문의하기</router-link>
           </li>
         </ul>

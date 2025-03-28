@@ -8,10 +8,10 @@ import Form from "@/components/common/Form.vue";
 import DropdownMenu from "@/components/common/DropdownMenu.vue";
 import customArrowIcon from '@/assets/image/icon/chevron-down.svg';
 import Button from "@/components/common/Button.vue";
-import Alert from "@/components/common/Alert.vue";
 import Modal from "@/components/common/Modal.vue";
-import axios from "axios";
-import { AI_TYPES } from '@/constants';
+import dtApi from "@/api/dtApi";
+
+const baseURL = "http://localhost:8205/api/dt";
 
 onMounted(() => init());
 
@@ -19,67 +19,55 @@ const route = useRoute();
 
 const apiId = ref(route.query.id);
 
-const endpoint = ref("http://ai.solution.com/ID (학습)");
-
-const aiTypes = ref(AI_TYPES);
+const endpoint = ref("http://dt.solution.com/ID");
 
 const fields = ref({});
 
-const alertVisible = ref(false);
-
-const alertMessage = ref("");
-
-const alertType = ref("error");
-
-const errorMessages = ref({
-  linkedName: "",
-  processType: "",
-  processName: "",
-  idName: "",
-  aiType: "",
-});
-
 const init = async () => {
-  alertMessage.value = "데이터 불러오는 중...";
-
-  alertType.value = "info";
-
-  alertVisible.value = true;
-
   await getProcessTypes();
 
   getApi();
 };
 
 const getApi = async () => {
-  const { data } = await axios.get(`http://localhost:8204/api/ai/conn/${apiId.value}`);
-
-  fields.value = {
-    ...data,
-    type: aiTypes.value.find(type => type.value === data.type).name
-  };
+  try {
+    const { data } = await dtApi.get(`/conn/${apiId.value}`);
+    const { name, processType, processName, endpoint } = data;
+  
+    fields.value = { name, processType, processName, endpoint };
+  } catch (e) {
+    alert("데이터를 가져오는 데 실패했습니다. 잠시 후 다시 시도해주세요.");
+  }
 };
 
 const processTypes = ref([]);
 
 const getProcessTypes = async () => {
-  const { data } = await axios.get("http://localhost:8204/api/ai/process/type");
+  try {
+    const { data } = await dtApi.get("/process/type");
 
-  processTypes.value = data;
+    processTypes.value = data;
+  } catch (error) {
+    alert("공정 타입 목록을 불러오는 데 실패했습니다. 잠시 후 다시 시도해주세요.");
+  }
 };
 
 const processNames = ref([]);
 
 const getProcessNames = async (newSelect) => {
-  const selectedProcessType = processTypes.value.find(opt => opt.name === newSelect)
+  try {
+    const selectedProcessType = processTypes.value.find(opt => opt.name === newSelect)
 
-  const { data } = await axios.get("http://localhost:8204/api/ai/process/name", {
-    params: {
-      typeId: selectedProcessType.id
-    }
-  });
+    const { data } = await dtApi.get("/process/name", {
+      params: {
+        typeId: selectedProcessType.id
+      }
+    });
 
-  processNames.value = data;
+    processNames.value = data;
+  } catch (error) {
+    alert("공정명을 불러오는 데 실패했습니다. 다시 시도해주세요.");
+  }
 };
 
 watch(() => fields.value.processType, (newValue, oldValue) => {
@@ -88,9 +76,10 @@ watch(() => fields.value.processType, (newValue, oldValue) => {
   getProcessNames(newValue);
 });
 
+const haveFieldsChanged = ref(false);
 
 watch(() => fields.value, (newValue, oldValue) => {
-  if (Object.keys(oldValue).length === 0) return;
+  if (haveFieldsChanged.value || Object.keys(oldValue).length === 0) return;
 
   haveFieldsChanged.value = true;
 }, { deep: true });
@@ -99,50 +88,27 @@ const isModalVisible = ref(false);
 
 const modalMessage = ref("연계를 수정하시겠습니까?");
 
-const isCancelModalVisible = ref(false);
-
-const haveFieldsChanged = ref(false);
-
-
-
 const isAllFieldsFilled = () => {
-  return Object.entries(fields.value).every(([key, value]) => !!value);
+  return Object.values(fields.value).every(val => !!val);
 };
 
-const handleUpdateClick = () => {
-  if (!isAllFieldsFilled()) {
-    alertMessage.value = "모든 필드를 입력해주세요.";
-    alertType.value = "error";
-    alertVisible.value = true;
-    return;
+const executeUpdate = async () => {
+  try {
+    const params = {
+      ...fields.value,
+      type: "DIGITAL_TWIN",
+      processId: processNames.value.find(opt => opt.name === fields.value.processName).id
+    };
+
+    await dtApi.put(`/conn/${apiId.value}`, params);
+
+    window.location.reload();
+  } catch (e) {
+    alert("업데이트 중 문제가 발생했습니다. 다시 시도해주세요.");
   }
-
-  isModalVisible.value = true;
 };
 
-const executeUpdate = () => {
-  isModalVisible.value = false;
-
-  alertMessage.value = "수정 중...";
-
-  alertType.value = "info";
-
-  alertVisible.value = true;
-
-  const params = {
-    ...fields.value,
-    type: aiTypes.value.find(opt => opt.name === fields.value.type).value,
-    processId: processNames.value.find(opt => opt.name === fields.value.processName).id
-  };
-
-  axios.put(`http://localhost:8204/api/ai/conn/${apiId.value}`, params);
-
-  setTimeout(() => {
-    alertMessage.value = "연계 정보가 성공적으로 수정되었습니다!";
-    alertType.value = "success";
-    alertVisible.value = true;
-  }, 2000);
-};
+const isCancelModalVisible = ref(false);
 
 const handleCancelClick = () => {
   if (!haveFieldsChanged.value) {
@@ -153,9 +119,7 @@ const handleCancelClick = () => {
   isCancelModalVisible.value = true;
 };
 
-const isUpdateButtonDisabled = computed(() => {
-  return !isAllFieldsFilled();
-});
+const isUpdateButtonDisabled = computed(() => !isAllFieldsFilled() );
 
 const goBack = () => {
   window.history.back();
@@ -167,19 +131,16 @@ const goBack = () => {
     <div class="contents-wrap">
       <Title text="연계 수정" />
       <CardBox>
-        <Alert :message="alertMessage" :type="alertType" :visible="alertVisible" @update:visible="alertVisible = false"
-          customClass="basicAlert" />
-
         <div class="content">
           <p>연계 endpoint :</p>
           <Input v-model="endpoint" :is-disabled="true" readonly />
         </div>
 
-        <Form @submit.prevent="handleUpdateClick" class="edit-form">
+        <Form class="edit-form">
           <div class="input-wrap">
             <div class="input-item">
               <p class="tit">연계명</p>
-              <Input v-model="fields.name" placeholder="연계명을 입력하세요" :errorMessage="errorMessages.linkedName" />
+              <Input v-model="fields.name" placeholder="연계명을 입력하세요" />
             </div>
 
             <div class="input-item">
@@ -196,7 +157,7 @@ const goBack = () => {
 
             <div class="input-item">
               <p class="tit">연계ID</p>
-              <Input v-model="fields.endpoint" placeholder="연계ID를 입력하세요" :errorMessage="errorMessages.idName" />
+              <Input v-model="fields.endpoint" placeholder="연계ID를 입력하세요" />
             </div>
           </div>
         </Form>
@@ -204,16 +165,14 @@ const goBack = () => {
         <div class="button-group right">
           <div class="buttons right-buttons">
             <Button label="취소" type="primary" class="cancel-btn" @click="handleCancelClick" />
-            <Button label="완료" type="primary" @click="handleUpdateClick" class="add-btn"
-              :disabled="isUpdateButtonDisabled" />
+            <Button label="완료" type="primary" @click="isModalVisible = true;" class="add-btn" :disabled="isUpdateButtonDisabled" />
           </div>
         </div>
       </CardBox>
     </div>
 
-    <Modal :show="isModalVisible" title="연계 수정" :message="modalMessage" @confirm="executeUpdate"
-      @cancel="isModalVisible = false" />
-    <!-- 취소 확인 모달 -->
+    <Modal :show="isModalVisible" title="연계 수정" :message="modalMessage" @confirm="executeUpdate" @cancel="isModalVisible = false" />
+
     <Modal :show="isCancelModalVisible" title="알림" confirmText="확인" cancelText="취소"
       @update:show="isCancelModalVisible = $event" @confirm="goBack" @cancel="isCancelModalVisible = false"
       class="alertModal">
