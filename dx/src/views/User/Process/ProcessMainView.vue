@@ -166,7 +166,7 @@ const handleUpdateStatus = (id, patch) => {
     };
   }
 };
-
+const dateRange = ref([null, null]);
 </script>
 
 <template>
@@ -181,8 +181,9 @@ const handleUpdateStatus = (id, patch) => {
         <div class="SearchFilter">
           <DropdownMenu v-model="selectedCategory" :options="categories" option-label="name" option-value="value"
             type="radio" :arrowIcon="customArrowIcon" />
-          <div class="date" :class="{ show: isDateCategory }">
-            <DateRangePicker v-model="searchRange" :enableTime="true" placeholder="기간을 선택하세요" />
+          <div class="date-range">
+            <DateRangePicker v-model="dateRange" :isRange="true" :enableTime="true" placeholder="날짜 범위 선택"
+              class="search-date" />
           </div>
           <div class="Search" v-if="!isDateCategory">
             <Input v-model="keyword" placeholder="검색어를 입력해주세요." class="search-input" />
