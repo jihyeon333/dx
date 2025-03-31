@@ -19,8 +19,9 @@ import { faSearch } from "@fortawesome/free-solid-svg-icons";
 
 const router = useRouter();
 
-
-
+const closeTableModal = () => {
+  isTableModalVisible.value = false;
+};
 
 const selectedRows = ref([]);
 const totalItems = computed(() => data.value.length);
@@ -276,8 +277,7 @@ const handleCancelClick = () => {
       cancelText="취소" @confirm="confirmDelete" @close="showDeleteModal = false" @cancel="showDeleteModal = false" />
 
     <Modal :show="isTableModalVisible" title="장비" :showCloseButton="true" :overlayClosable="false" :showCancel="false"
-      :showConfirm="false" :showFooter="false" :showButtons="false" class="deviceModal"
-      @close="isTableModalVisible = false">
+      :showConfirm="false" :showFooter="false" :showButtons="false" class="deviceModal" @close="closeTableModal">
       <template #default>
         <div class="modal-table-container">
           <div class="SearchBar right">
@@ -286,8 +286,8 @@ const handleCancelClick = () => {
                 placeholder="선택" type="radio" :arrowIcon="customArrowIcon" />
               <div class="Search">
                 <Input v-model="keyword" placeholder="검색어를 입력해주세요." class="search-input" />
-                <Button :icon="faSearch" @click="handleSearch" class="search-btn" />
               </div>
+              <Button @click="handleSearch" class="search-button" label="검색" />
             </div>
           </div>
           <table class="modal-table">

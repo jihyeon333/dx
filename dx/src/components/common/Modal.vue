@@ -26,6 +26,7 @@ const emits = defineEmits(['confirm', 'cancel', 'close']);
 
 const closeModal = () => {
     emits('update:show', false);
+    emits('close');
 };
 
 const confirmAction = () => {

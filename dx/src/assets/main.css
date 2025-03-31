@@ -407,3 +407,37 @@
 	max-width: 400px;
 	width: 100%;
 }
+.modal-table-container .SearchBar {
+	height: 40px;
+}
+.modal-table-container .SearchBar .input {
+	border: none;
+}
+.modal-table-container .SearchBar .SearchFilter .Search .input-box .input {
+	border: none;
+}
+.modal-table-container .SearchBar .SearchFilter .Search .input-box .input input {
+	width: 100%;
+	height: 40px;
+	border: 1px solid #d9d9d9;
+	transition: all 0.3s;
+}
+.modal-table-container .SearchBar .SearchFilter input {
+	width: 100%;
+	height: 40px;
+	border: 1px solid #d9d9d9;
+	transition: all 0.3s;
+}
+.modal-table-container .SearchBar input:focus {
+	border-color: #2c2c2c;
+}
+.modal-table-container .SearchBar .SearchFilter .search-button {
+	height: 40px;
+	width: 70px;
+	background-color: #003c7a;
+	color: #ffffff;
+	transition: all 0.3s;
+}
+.modal-table-container .SearchBar .SearchFilter .search-button:hover {
+	background-color: #00305f;
+}
